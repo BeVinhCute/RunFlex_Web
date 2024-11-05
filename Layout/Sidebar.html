@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="../assets/css/styles.min.css" />
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <script src="https://code.iconify.design/3/3.0.0/iconify.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+
+</head>
+
+<body>
+    <aside class="left-sidebar">
+        <div>
+            <div class="brand-logo d-flex align-items-center justify-content-between">
+                <a href="./index.html" class="text-nowrap logo-img">
+                    <img src="../assets/images/logos/runflex.jpg" alt="" />
+                </a>
+                <div class="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
+                    <i class="ti ti-x fs-8"></i>
+                </div>
+            </div>
+            <nav class="sidebar-nav scroll-sidebar" data-simplebar="">
+                <ul id="sidebarnav">
+                    <li class="nav-small-cap">
+                        <iconify-icon icon="solar:home-2-line" class="nav-small-cap-icon fs-4"></iconify-icon>
+                        <span class="hide-menu">Trang Chủ</span>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" href="../index.html" aria-expanded="false">
+                            <i class="fas fa-chart-line"></i>
+                            <span class="hide-menu">Tổng Quan</span>
+                        </a>
+                    </li>
+                    <li class="nav-small-cap">
+                        <iconify-icon icon="solar:shopping-bag-line-duotone"
+                            class="nav-small-cap-icon fs-4"></iconify-icon>
+                        <span class="hide-menu">QUẢN LÝ SẢN PHẨM</span>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" href="../html/sanpham.html" aria-expanded="false">
+                            <i class="fas fa-box"></i>
+                            <span class="hide-menu">Sản Phẩm</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" href="javascript:void(0)" aria-expanded="false"
+                            data-bs-toggle="collapse" data-bs-target="#attributeMenu">
+                            <i class="fas fa-list"></i>
+                            <span class="hide-menu">Thuộc Tính</span>
+                            <i class="fas fa-chevron-right arrow-icon"></i> <!-- Mũi tên -->
+                        </a>
+                        <div id="attributeMenu" class="collapse">
+                            <ul class="sidebar-submenu">
+                                <li class="sidebar-item">
+                                    <a class="sidebar-link" href="../html/kichco.html">
+                                        <iconify-icon icon="solar:ruler-bold"></iconify-icon>
+                                        <span class="hide-menu">Kích Cỡ</span>
+                                    </a>
+                                </li>
+                                <li class="sidebar-item">
+                                    <a class="sidebar-link" href="../html/mausac.html">
+                                        <iconify-icon icon="solar:palette-bold"></iconify-icon>
+                                        <span class="hide-menu">Màu Sắc</span>
+                                    </a>
+                                </li>
+                                <li class="sidebar-item">
+                                    <a class="sidebar-link" href="../html/thuonghieu.html">
+                                        <iconify-icon icon="solar:flag-bold"></iconify-icon>
+                                        <span class="hide-menu">Thương Hiệu</span>
+                                    </a>
+                                </li>
+                                <li class="sidebar-item">
+                                    <a class="sidebar-link" href="../html/chatlieu.html">
+                                        <iconify-icon icon="solar:tag-bold-duotone"></iconify-icon>
+                                        <span class="hide-menu">Chất Liệu</span>
+                                    </a>
+                                </li>
+                                <li class="sidebar-item">
+                                    <a class="sidebar-link" href="../html/danhmuc.html">
+                                        <iconify-icon icon="mdi:folder"></iconify-icon> <!-- Thay đổi biểu tượng -->
+                                        <span class="hide-menu">Danh Mục</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+
+
+                    <li class="nav-small-cap">
+                        <iconify-icon icon="solar:shopping-bag-line-duotone"
+                            class="nav-small-cap-icon fs-4"></iconify-icon>
+                        <span class="hide-menu">QUẢN LÝ Tài Khoản</span>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" href="../html/nhanvien.html" aria-expanded="false">
+                            <i class="fas fa-box"></i>
+                            <span class="hide-menu">Nhân Viên</span>
+                        </a>
+                    </li>
+
+
+                    <li class="nav-small-cap">
+                        <iconify-icon icon="solar:discount-bold" class="nav-small-cap-icon fs-4"></iconify-icon>
+                        <span class="hide-menu">Quản Lý Giảm Giá</span>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" href="javascript:void(0)" aria-expanded="false"
+                            data-bs-toggle="collapse" data-bs-target="#discountMenu">
+                            <iconify-icon icon="solar:tag-horizontal-bold-duotone"></iconify-icon>
+                            <span class="hide-menu">Giảm Giá</span>
+                            <i class="fas fa-chevron-right arrow-icon"></i> <!-- Mũi tên -->
+                        </a>
+                        <div id="discountMenu" class="collapse">
+                            <ul class="sidebar-submenu">
+                                <li class="sidebar-item">
+                                    <a class="sidebar-link" href="./ui-sizes.html">
+                                        <iconify-icon icon="solar:ticket-bold-duotone"></iconify-icon>
+                                        <span class="hide-menu">Voucher</span>
+                                    </a>
+                                </li>
+                                <li class="sidebar-item">
+                                    <a class="sidebar-link" href="./ui-colors.html">
+                                        <iconify-icon icon="solar:sale-bold-duotone"></iconify-icon>
+                                        <span class="hide-menu">Khuyến Mại</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="nav-small-cap">
+                        <iconify-icon icon="solar:image-bold" class="nav-small-cap-icon fs-4"></iconify-icon>
+                        <span class="hide-menu">Thư Viện Ảnh</span>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" href="javascript:void(0)" aria-expanded="false"
+                            data-bs-toggle="collapse" data-bs-target="#imageMenu">
+                            <iconify-icon icon="solar:camera-bold"></iconify-icon>
+                            <span class="hide-menu">Ảnh</span>
+                            <i class="fas fa-chevron-right arrow-icon"></i> <!-- Mũi tên -->
+                        </a>
+                        <div id="imageMenu" class="collapse">
+                            <ul class="sidebar-submenu">
+                                <li class="sidebar-item">
+                                    <a class="sidebar-link" href="html/anh.html">
+                                        <iconify-icon icon="solar:gallery-bold-duotone"></iconify-icon>
+                                        <span class="hide-menu">Thư Viện Ảnh</span>
+                                    </a>
+                                </li>
+                                <li class="sidebar-item">
+                                    <a class="sidebar-link" href="./html/uploadAnh.html">
+                                        <iconify-icon icon="solar:upload-bold"></iconify-icon>
+                                        <span class="hide-menu">Tải Ảnh Lên</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </aside>
+
+
+    <!-- Bootstrap JS and other scripts -->
+    <script src="../assets/js/main.js"></script>
+    <script src="../assets/libs/jquery/dist/jquery.min.js"></script>
+    <script src="../assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/sidebarmenu.js"></script>
+    <script src="../assets/js/app.min.js"></script>
+    <script src="../assets/libs/apexcharts/dist/apexcharts.min.js"></script>
+    <script src="../assets/libs/simplebar/dist/simplebar.js"></script>
+    <script src="../assets/js/dashboard.js"></script>
+    <!-- solar icons -->
+    <script src="https://cdn.jsdelivr.net/npm/iconify-icon@1.0.8/dist/iconify-icon.min.js"></script>
+</body>
+
+</html>

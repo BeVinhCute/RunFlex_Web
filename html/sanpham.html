@@ -1,0 +1,121 @@
+<!doctype html>
+<html ng-app="myApp">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>RunFlex - Quản Lý Bán Giày Thể Thao</title>
+    <link rel="shortcut icon" type="image/png" href="../assets/images/logos/runflex.jpg" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/css/bootstrap.min.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <link rel="stylesheet" href="../assets/css/styles.min.css" />
+    <link rel="stylesheet" href="../assets/css/main.css">
+</head>
+
+<body ng-controller="sanPhamController">
+    <!-- Body Wrapper -->
+    <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+    data-sidebar-position="fixed" data-header-position="fixed">
+
+        <!-- Sidebar Start -->
+        <div ng-include="'../Layout/Sidebar.html'"></div>
+
+        <!-- Body Wrapper -->
+        <div class="body-wrapper">
+            <div ng-include="'../Layout/Header.html'"></div>
+            <h1 class="mt-5">Danh Sách Sản Phẩm</h1>
+            <form class="container mt-4">
+                <div class="mb-3">
+                    <label class="form-label">Tên sản phẩm:</label>
+                    <input type="text" class="form-control" ng-model="sanPham.tenSanPham">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Danh mục:</label>
+                    <div class="input-group">
+                        <select class="form-select" ng-model="sanPham.danhMuc.id"
+                            ng-options="danhMuc.id as danhMuc.tenDanhMuc for danhMuc in danhMucs">
+                            <option value="">Chọn danh mục</option>
+                        </select>
+                        <input type="text" class="form-control" ng-model="danhMuc.tenDanhMuc"
+                            placeholder="Thêm danh mục">
+                        <button class="btn btn-outline-primary" ng-click="themDanhMuc()">+ Thêm</button>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Thương hiệu:</label>
+                    <div class="input-group">
+                        <select class="form-select" ng-model="sanPham.thuongHieu.id"
+                            ng-options="thuongHieu.id as thuongHieu.tenThuongHieu for thuongHieu in thuongHieus">
+                            <option value="">Chọn thương hiệu</option>
+                        </select>
+                        <input type="text" class="form-control" ng-model="thuongHieu.tenThuongHieu"
+                            placeholder="Thêm thương hiệu">
+                        <button class="btn btn-outline-primary" ng-click="themThuongHieu()">+ Thêm</button>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button class="btn btn-primary" type="button" ng-click="submitData()">Thêm mới</button>
+                    <button class="btn btn-success" type="button" ng-click="updateData()">Cập nhật</button>
+                    <button class="btn btn-secondary" type="button" ng-click="resetForm()">Làm mới</button>
+                </div>
+            </form>
+
+            <div class="table-responsive mt-4">
+                <table class="table table-bordered table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Tên</th>
+                            <th>Số lượng</th>
+                            <th>Danh mục</th>
+                            <th>Thương hiệu</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="sanPham in sanPhams">
+                            <td>{{ sanPham.id }}</td>
+                            <td>{{ sanPham.tenSanPham }}</td>
+                            <td>{{ soLuongData[sanPham.id] || 0 }}</td>
+                            <td>{{ sanPham.danhMuc.tenDanhMuc }}</td>
+                            <td>{{ sanPham.thuongHieu.tenThuongHieu }}</td>
+                            <td>
+                                <span
+                                    ng-class="{'badge bg-success': sanPham.trangThai == 1, 'badge bg-danger': sanPham.trangThai != 1}">
+                                    {{ sanPham.trangThai == 1 ? 'Hoạt Động' : 'Ngưng Hoạt Động' }}
+                                </span>
+                            </td>
+                            <td>
+                                <a href="chitietsanpham.html" class="btn btn-info btn-sm">Chi tiết</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="../assets/js/main.js"></script>
+<script src="../assets/js/sanpham.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<!-- Bootstrap JS and other scripts -->
+<script src="../assets/js/main.js"></script>
+<script src="../assets/libs/jquery/dist/jquery.min.js"></script>
+<script src="../assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../assets/js/sidebarmenu.js"></script>
+<script src="../assets/js/app.min.js"></script>
+<script src="../assets/libs/apexcharts/dist/apexcharts.min.js"></script>
+<script src="../assets/libs/simplebar/dist/simplebar.js"></script>
+<script src="../assets/js/dashboard.js"></script>
+<!-- solar icons -->
+<script src="https://cdn.jsdelivr.net/npm/iconify-icon@1.0.8/dist/iconify-icon.min.js"></script>
+
+</html>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        // Tải danh sách ảnh
+        fetch("http://localhost:8080/api/images")
+            .then((response) => response.json())
+            .then((data) => {
+                console.log(data);
+                const imageList = document.getElementById('imageList');
+                imageList.innerHTML = ''; // Xóa nội dung cũ
+                data.forEach(image => {
+                    const imgElement = document.createElement('img');
+                    imgElement.src = image.tenURL; // Hiển thị ảnh
+                    imgElement.alt = 'Ảnh';
+                    imgElement.width = 100; // Kích thước ảnh
+                    imageList.appendChild(imgElement);
+                });
+            })
+            .catch((error) => console.error("Error fetching images:", error));
+    </script>
+    
+    <div id="imageList"></div> <!-- Nơi hiển thị danh sách ảnh -->
+    
+</body>
+</html>

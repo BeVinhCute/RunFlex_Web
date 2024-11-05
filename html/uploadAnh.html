@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Tải Ảnh Lên</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .image-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px; /* Khoảng cách giữa các ô ảnh */
+        }
+        .image-item {
+            position: relative;
+            width: 150px; /* Chiều rộng của mỗi ô ảnh */
+        }
+        .image-item img {
+    max-width: 100%; /* Đảm bảo ảnh không vượt quá chiều rộng của ô */
+    height: auto;    /* Giữ tỷ lệ khung hình */
+    border-radius: 5px; /* Bo tròn góc ảnh */
+}
+
+        .checkbox {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .add-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #f0c14b;
+            border: 1px solid #a88734;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h2>Tải Ảnh Lên</h2>
+    <form id="uploadForm">
+        <input type="file" id="imageFile" accept="image/*" required>
+        <button type="submit" class="add-button">Tải Ảnh Lên</button>
+    </form>
+    <div class="image-container" id="imageList"></div> <!-- Nơi hiển thị danh sách ảnh -->
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', function (event) {
+            event.preventDefault(); // Ngăn chặn hành vi mặc định của form
+
+            const imageFile = document.getElementById('imageFile').files[0];
+
+            const formData = new FormData();
+            formData.append('image', imageFile);
+
+            fetch('http://localhost:8080/api/images/upload', { // Đảm bảo URL đúng
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                console.log('Image uploaded:', data);
+                loadImages(); // Tải lại danh sách ảnh
+            })
+            .catch(error => console.error('Error uploading image:', error));
+        });
+
+        // Tải danh sách ảnh
+        function loadImages() {
+            fetch("http://localhost:8080/api/images")
+                .then((response) => response.json())
+                .then((data) => {
+                    console.log(data);
+                    const imageList = document.getElementById('imageList');
+                    imageList.innerHTML = ''; // Xóa nội dung cũ
+                    data.forEach(image => {
+                        const item = document.createElement('div');
+                        item.className = 'image-item';
+                        item.innerHTML = `
+                            <input type="checkbox" class="checkbox">
+                            <img src="${image.tenURL}" alt="Ảnh sản phẩm">
+                        `;
+                        imageList.appendChild(item);
+                    });
+                })
+                .catch((error) => console.error("Error fetching images:", error));
+        }
+
+        // Gọi hàm để tải danh sách ảnh khi trang được tải
+        loadImages();
+    </script>
+</body>
+</html>
