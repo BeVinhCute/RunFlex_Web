@@ -10,7 +10,6 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <link rel="stylesheet" href="../assets/css/styles.min.css" />
     <link rel="stylesheet" href="../assets/css/main.css">
@@ -19,7 +18,7 @@
 <body ng-controller="sanPhamController">
     <!-- Body Wrapper -->
     <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
-    data-sidebar-position="fixed" data-header-position="fixed">
+        data-sidebar-position="fixed" data-header-position="fixed">
 
         <!-- Sidebar Start -->
         <div ng-include="'../Layout/Sidebar.html'"></div>
@@ -27,51 +26,139 @@
         <!-- Body Wrapper -->
         <div class="body-wrapper">
             <div ng-include="'../Layout/Header.html'"></div>
-            <h1 class="mt-5">Danh Sách Sản Phẩm</h1>
-            <form class="container mt-4">
+            <div class="container-fluid">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="#" ng-click="backToList()">Danh sách sản phẩm</a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">
+                            {{ showForm ? 'Thêm mới sản phẩm' : sanPham.tenSanPham }}
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+
+            <form ng-if="showForm" class="container mt-4">
                 <div class="mb-3">
                     <label class="form-label">Tên sản phẩm:</label>
-                    <input type="text" class="form-control" ng-model="sanPham.tenSanPham">
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Danh mục:</label>
                     <div class="input-group">
-                        <select class="form-select" ng-model="sanPham.danhMuc.id"
-                            ng-options="danhMuc.id as danhMuc.tenDanhMuc for danhMuc in danhMucs">
-                            <option value="">Chọn danh mục</option>
+                        <!-- Dropdown chọn sản phẩm -->
+                        <select class="form-select" ng-model="sanPham.id"
+                            ng-options="sp.id as sp.tenSanPham for sp in sanPhams">
+                            <option value="" disabled>Chọn sản phẩm</option>
                         </select>
-                        <input type="text" class="form-control" ng-model="danhMuc.tenDanhMuc"
-                            placeholder="Thêm danh mục">
-                        <button class="btn btn-outline-primary" ng-click="themDanhMuc()">+ Thêm</button>
+                        <!-- Nút thêm sản phẩm mới -->
+                        <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#detailsModal"
+                            type="button" ng-click="showDetailsForm = !showDetailsForm">
+                            <i class="iconify" data-icon="mdi:plus"></i>
+                        </button>
                     </div>
                 </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Thương hiệu:</label>
-                    <div class="input-group">
-                        <select class="form-select" ng-model="sanPham.thuongHieu.id"
-                            ng-options="thuongHieu.id as thuongHieu.tenThuongHieu for thuongHieu in thuongHieus">
-                            <option value="">Chọn thương hiệu</option>
-                        </select>
-                        <input type="text" class="form-control" ng-model="thuongHieu.tenThuongHieu"
-                            placeholder="Thêm thương hiệu">
-                        <button class="btn btn-outline-primary" ng-click="themThuongHieu()">+ Thêm</button>
-                    </div>
-                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#collapseProperties" aria-expanded="true">
+                            <h5> Thuộc tính</h>
+                        </button>
+                    </h2>
+                    <div id="collapseProperties" class="accordion-collapse collapse show">
+                        <div class="accordion-body">
 
-                <div class="d-flex gap-2">
-                    <button class="btn btn-primary" type="button" ng-click="submitData()">Thêm mới</button>
-                    <button class="btn btn-success" type="button" ng-click="updateData()">Cập nhật</button>
-                    <button class="btn btn-secondary" type="button" ng-click="resetForm()">Làm mới</button>
+                            <!-- Chất liệu -->
+                            <div class="mb-3">
+                                <label class="form-label">Chất liệu:</label>
+                                <select class="form-select" ng-model="sanPham.chatLieu"
+                                    ng-options="chatLieu.id as chatLieu.tenChatLieu for chatLieu in chatLieus">
+                                    <option value="" disabled>Chọn chất liệu</option>
+                                </select>
+                            </div>
+                            <!-- Màu sắc -->
+                            <div class="col-md-6">
+                                <label class="form-label">Màu sắc:</label>
+                                <select class="form-select" ng-model="chiTietSanPham.mauSac">
+                                    <option value="" disabled>Chọn màu sắc</option>
+                                    <option ng-repeat="mau in mauSacs" value="{{mau.id}}">{{mau.tenMauSac}}</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row mt-3">
+                            <!-- Kích cỡ -->
+                            <div class="col-md-6">
+                                <label class="form-label">Kích cỡ:</label>
+                                <select class="form-select" ng-model="chiTietSanPham.kichCo">
+                                    <option value="" disabled>Chọn kích cỡ</option>
+                                    <option ng-repeat="kc in kichCos" value="{{kc.id}}">{{kc.soKichCo}}</option>
+                                </select>
+                            </div>
+
+                        </div>
+                    </div>
                 </div>
             </form>
 
-            <div class="table-responsive mt-4">
+
+            <!-- Modal -->
+            <div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="detailsModalLabel">Chi tiết sản phẩm</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form>
+                                <div class="mb-3">
+                                    <label class="form-label">Tên sản phẩm:</label>
+                                    <input type="text" class="form-control" ng-model="sanPham.tenSanPham">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Danh mục:</label>
+                                    <div class="input-group">
+                                        <select class="form-select" ng-model="sanPham.danhMuc.id"
+                                            ng-options="danhMuc.id as danhMuc.tenDanhMuc for danhMuc in danhMucs">
+                                            <option value="">Chọn danh mục</option>
+                                        </select>
+                                        <input type="text" class="form-control" ng-model="danhMuc.tenDanhMuc"
+                                            placeholder="Thêm danh mục">
+                                        <button class="btn btn-outline-primary" ng-click="themDanhMuc()">+ Thêm</button>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Thương hiệu:</label>
+                                    <div class="input-group">
+                                        <select class="form-select" ng-model="sanPham.thuongHieu.id"
+                                            ng-options="thuongHieu.id as thuongHieu.tenThuongHieu for thuongHieu in thuongHieus">
+                                            <option value="">Chọn thương hiệu</option>
+                                        </select>
+                                        <input type="text" class="form-control" ng-model="thuongHieu.tenThuongHieu"
+                                            placeholder="Thêm thương hiệu">
+                                        <button class="btn btn-outline-primary" ng-click="themThuongHieu()">+
+                                            Thêm</button>
+                                    </div>
+                                </div>
+
+                                <button class="btn btn-primary" type="button" ng-click="submitData()">Thêm mới</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Nút Quay lại -->
+            <button class="btn btn-primary mt-4" type="button" ng-click="showAddForm()" ng-if="!showForm">Thêm sản
+                phẩm mới</button>
+
+            <div ng-if="!showForm" class="table-responsive mt-4">
                 <table class="table table-bordered table-hover align-middle">
                     <thead class="table-light">
                         <tr>
-                            <th>ID</th>
+                            <th>#</th>
                             <th>Tên</th>
                             <th>Số lượng</th>
                             <th>Danh mục</th>
@@ -82,7 +169,7 @@
                     </thead>
                     <tbody>
                         <tr ng-repeat="sanPham in sanPhams">
-                            <td>{{ sanPham.id }}</td>
+                            <td>{{$index + 1}}</td>
                             <td>{{ sanPham.tenSanPham }}</td>
                             <td>{{ soLuongData[sanPham.id] || 0 }}</td>
                             <td>{{ sanPham.danhMuc.tenDanhMuc }}</td>
@@ -90,11 +177,12 @@
                             <td>
                                 <span
                                     ng-class="{'badge bg-success': sanPham.trangThai == 1, 'badge bg-danger': sanPham.trangThai != 1}">
-                                    {{ sanPham.trangThai == 1 ? 'Hoạt Động' : 'Ngưng Hoạt Động' }}
+                                    {{ sanPham.trangThai == 1 ? 'Đang Bán' : 'Ngưng Bán' }}
                                 </span>
                             </td>
                             <td>
-                                <a href="chitietsanpham.html" class="btn btn-info btn-sm">Chi tiết</a>
+                                <a ng-href="chitietsanpham.html?id={{ sanPham.id }}" class="btn btn-info btn-sm">Chi
+                                    tiết</a>
                             </td>
                         </tr>
                     </tbody>
@@ -103,10 +191,12 @@
         </div>
     </div>
 </body>
+
 <script src="../assets/js/main.js"></script>
 <script src="../assets/js/sanpham.js"></script>
+<script src="../assets/js/kichco.js"></script>
+<script src="../assets/js/chitietsanpham.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-<!-- Bootstrap JS and other scripts -->
 <script src="../assets/js/main.js"></script>
 <script src="../assets/libs/jquery/dist/jquery.min.js"></script>
 <script src="../assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
@@ -115,7 +205,6 @@
 <script src="../assets/libs/apexcharts/dist/apexcharts.min.js"></script>
 <script src="../assets/libs/simplebar/dist/simplebar.js"></script>
 <script src="../assets/js/dashboard.js"></script>
-<!-- solar icons -->
 <script src="https://cdn.jsdelivr.net/npm/iconify-icon@1.0.8/dist/iconify-icon.min.js"></script>
 
 </html>
