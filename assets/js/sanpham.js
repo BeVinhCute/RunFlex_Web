@@ -12,77 +12,58 @@ app.controller("sanPhamController", function ($scope, $http) {
     }
   );
 
-  // Lấy dữ liệu chất liệu từ API
-  $http.get("http://localhost:8080/chatlieu").then(function (response) {
-    $scope.chatLieus = response.data;
-  });
+  $scope.submitDatachiTietSanPham = function () {
+    $http
+      .post("http://localhost:8080/chitietsanpham", $scope.chiTietSanPham)
+      .then(
+        function (response) {
+          console.log("Tạo chi tiết sản phẩm thành công");
+          // Có thể thêm logic để cập nhật danh sách chi tiết sản phẩm nếu cần
+        },
+        function (error) {
+          console.error("Lỗi khi tạo chi tiết sản phẩm:", error);
+        }
+      );
+  };
 
-  // Lấy dữ liệu màu sắc từ API
-  $http.get("http://localhost:8080/mausac").then(function (response) {
-    $scope.mauSacs = response.data;
-  });
-
-  // Lấy dữ liệu kích cỡ từ API
+  // GET: danh sách kích cỡ
   $http.get("http://localhost:8080/kichco").then(function (response) {
     $scope.kichCos = response.data;
   });
 
-  // Hàm thêm kích cỡ vào danh sách
-  $scope.addSize = function () {
-    if (
-      $scope.newKichCo &&
-      !$scope.sanPham.kichCosDaChon.includes($scope.newKichCo)
-    ) {
-      $scope.sanPham.kichCosDaChon.push($scope.newKichCo);
-      $scope.newKichCo = ""; // Reset ô nhập kích cỡ
+  // GET: danh sách màu sắc
+  $http.get("http://localhost:8080/mausac").then(function (response) {
+    $scope.mauSacs = response.data;
+  });
+
+  // GET: danh sách đế giày
+  $http.get("http://localhost:8080/degiay").then(function (response) {
+    $scope.deGiays = response.data;
+  });
+
+  // GET: danh sách chất liệu
+  $http.get("http://localhost:8080/chatlieu").then(function (response) {
+    $scope.chatLieus = response.data;
+  });
+  // GET: lấy danh mục
+  $http.get("http://localhost:8080/danhmuc").then(
+    function (response) {
+      $scope.danhMucs = response.data; // Lưu danh mục vào scope
+    },
+    function (error) {
+      console.error("Lỗi khi lấy danh mục:", error);
     }
-  };
+  );
 
-  // Hàm thêm màu sắc vào danh sách
-  $scope.addColor = function () {
-    if (
-      $scope.newMauSac &&
-      !$scope.sanPham.mauSacsDaChon.includes($scope.newMauSac)
-    ) {
-      $scope.sanPham.mauSacsDaChon.push($scope.newMauSac);
-      $scope.newMauSac = ""; // Reset ô nhập màu sắc
+  // GET: lấy thương hiệu
+  $http.get("http://localhost:8080/thuonghieu").then(
+    function (response) {
+      $scope.thuongHieus = response.data; // Lưu thương hiệu vào scope
+    },
+    function (error) {
+      console.error("Lỗi khi lấy thương hiệu:", error);
     }
-  };
-  // Hàm để lấy tên Màu sắc từ ID
-  $scope.getMauSacName = function (id) {
-    var mauSac = $scope.mauSacs.find(function (item) {
-      return item.id === id;
-    });
-    return mauSac ? mauSac.tenMauSac : "";
-  };
-
-  // Hàm để lấy tên Kích cỡ từ ID
-  $scope.getKichCoName = function (id) {
-    var kichCo = $scope.kichCos.find(function (item) {
-      return item.id === id;
-    });
-    return kichCo ? kichCo.soKichCo : "";
-  };
-
-  $scope.showForm = false; // Mặc định ẩn form thêm mới
-
-  // Hàm để hiển thị form thêm sản phẩm mới
-  $scope.showAddForm = function () {
-    $scope.showForm = true; // Hiển thị form
-  };
-
-  // Hàm để quay lại danh sách sản phẩm
-  $scope.backToList = function () {
-    $scope.showForm = false; // Ẩn form
-  };
-
-  $scope.showProductDetails = false; // Ẩn phần chi tiết sản phẩm ban đầu
-
-  $scope.submitDetails = function () {
-    // Xử lý thêm chi tiết sản phẩm
-    console.log("Chi tiết sản phẩm:", $scope.sanPham);
-    // Sau khi thêm thành công, bạn có thể ẩn form hoặc thông báo thành công
-  };
+  );
 
   $scope.sanPham = {
     id: null,
@@ -90,8 +71,6 @@ app.controller("sanPhamController", function ($scope, $http) {
     trangThai: "",
     danhMuc: { id: null },
     thuongHieu: { id: null },
-    kichCosDaChon: [], // Danh sách kích cỡ đã chọn
-    mauSacsDaChon: [], // Danh sách màu sắc đã chọn
   };
 
   // Gọi API để lấy số lượng theo id
@@ -109,12 +88,6 @@ app.controller("sanPhamController", function ($scope, $http) {
       console.error("Lỗi khi lấy dữ liệu số lượng:", error);
     }
   );
-
-  // Hàm để mở form thêm mới
-  $scope.showAddForm = function () {
-    $scope.showForm = true; // Hiển thị form
-    $scope.resetForm(); // Reset dữ liệu form
-  };
 
   // POST: Thêm mới sản phẩm
   $scope.submitData = function () {
@@ -179,5 +152,54 @@ app.controller("sanPhamController", function ($scope, $http) {
         console.error("Lỗi khi tạo:", error);
       }
     );
+  };
+
+  $scope.showAddForm = false; // Biến điều khiển form thêm sản phẩm
+
+  // Hàm để hiện form thêm sản phẩm
+  $scope.hienFormThemSanPham = function () {
+    $scope.showAddForm = true;
+  };
+
+  // Hàm để ẩn form thêm sản phẩm
+  $scope.anFormThemSanPham = function () {
+    $scope.showAddForm = false;
+  };
+  const app = angular.module("myApp", []);
+
+  $scope.sanPham = {
+    id: null,
+    tenSanPham: "",
+    trangThai: "",
+    danhMuc: { id: null },
+    thuongHieu: { id: null },
+  };
+
+  // Gọi API để lấy số lượng theo id
+  $http.get("http://localhost:8080/chitietsanpham/slsp").then(
+    function (response) {
+      $scope.soLuongData = {};
+      console.log(response.data); // Kiểm tra dữ liệu trả về từ API
+      response.data.forEach(function (item) {
+        const idSanPham = item[0];
+        const tongSoLuong = item[1];
+        $scope.soLuongData[idSanPham] = tongSoLuong;
+      });
+    },
+    function (error) {
+      console.error("Lỗi khi lấy dữ liệu số lượng:", error);
+    }
+  );
+  $scope.submitDataChiTietSanPham = function () {
+    $http
+      .post("http://localhost:8080/chitietsanpham", $scope.chiTietSanPham)
+      .then(
+        function (response) {
+          console.log("Tạo chi tiết sản phẩm thành công");
+        },
+        function (error) {
+          console.error("Lỗi khi tạo chi tiết sản phẩm:", error);
+        }
+      );
   };
 });
