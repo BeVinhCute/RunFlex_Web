@@ -28,17 +28,51 @@
             <div ng-include="'../Layout/Header.html'"></div>
             <div class="container-fluid">
                 <!-- Tab Navigation -->
-                <ul class="nav nav-tabs" id="myTab" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home"
-                            type="button" role="tab" aria-controls="home" aria-selected="true">Danh sách sản
-                            phẩm</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="add-tab" data-bs-toggle="tab" data-bs-target="#add" type="button"
-                            role="tab" aria-controls="add" aria-selected="false">Thêm sản phẩm</button>
-                    </li>
-                </ul>
+
+                <button class="btn btn-primary mt-3" ng-click="hienFormThemSanPham()" ng-if="!showAddForm">Thêm sản
+                    phẩm</button>
+
+                <a class="btn btn-secondary mt-3 ms-2" ng-href="addChitietsanpham.html">Thêm chi tiết sản phẩm</a>
+
+                <!-- Thêm sản phẩm -->
+                <form ng-show="showAddForm">
+                    <div class="mb-3">
+                        <label class="form-label">Tên sản phẩm:</label>
+                        <input type="text" class="form-control" ng-model="sanPham.tenSanPham">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Danh mục:</label>
+                        <div class="input-group">
+                            <select class="form-select" ng-model="sanPham.danhMuc.id"
+                                ng-options="danhMuc.id as danhMuc.tenDanhMuc for danhMuc in danhMucs">
+                                <option value="">Chọn danh mục</option>
+                            </select>
+                            <input type="text" class="form-control" ng-model="danhMuc.tenDanhMuc"
+                                placeholder="Thêm danh mục">
+                            <button class="btn btn-outline-primary" ng-click="themDanhMuc()">+ Thêm</button>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Thương hiệu:</label>
+                        <div class="input-group">
+                            <select class="form-select" ng-model="sanPham.thuongHieu.id"
+                                ng-options="thuongHieu.id as thuongHieu.tenThuongHieu for thuongHieu in thuongHieus">
+                                <option value="">Chọn thương hiệu</option>
+                            </select>
+                            <input type="text" class="form-control" ng-model="thuongHieu.tenThuongHieu"
+                                placeholder="Thêm thương hiệu">
+                            <button class="btn btn-outline-primary" ng-click="themThuongHieu()">+ Thêm</button>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-primary" type="button" ng-click="submitData()">Thêm mới</button>
+                        <button class="btn btn-secondary" type="button" ng-click="resetForm()">Làm mới</button>
+                        <button class="btn btn-danger" type="button" ng-click="anFormThemSanPham()">Hủy</button>
+                    </div>
+                </form>
 
                 <!-- Tab Content -->
                 <div class="tab-content" id="myTabContent">
@@ -79,131 +113,6 @@
                                 </tbody>
                             </table>
                         </div>
-                    </div>
-
-                    <!-- Thêm sản phẩm -->
-                    <div class="tab-pane fade" id="add" role="tabpanel" aria-labelledby="add-tab">
-                        <!-- Nút Thêm sản phẩm -->
-                        <button class="btn btn-primary mt-3" ng-click="hienFormThemSanPham()" ng-if="!showAddForm">Thêm
-                            sản phẩm</button>
-
-                        <!-- Form thêm sản phẩm, chỉ hiển thị khi showAddForm là true -->
-                        <form ng-show="showAddForm">
-                            <div class="mb-3">
-                                <label class="form-label">Tên sản phẩm:</label>
-                                <input type="text" class="form-control" ng-model="sanPham.tenSanPham">
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label">Danh mục:</label>
-                                <div class="input-group">
-                                    <select class="form-select" ng-model="sanPham.danhMuc.id"
-                                        ng-options="danhMuc.id as danhMuc.tenDanhMuc for danhMuc in danhMucs">
-                                        <option value="">Chọn danh mục</option>
-                                    </select>
-                                    <input type="text" class="form-control" ng-model="danhMuc.tenDanhMuc"
-                                        placeholder="Thêm danh mục">
-                                    <button class="btn btn-outline-primary" ng-click="themDanhMuc()">+ Thêm</button>
-                                </div>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label">Thương hiệu:</label>
-                                <div class="input-group">
-                                    <select class="form-select" ng-model="sanPham.thuongHieu.id"
-                                        ng-options="thuongHieu.id as thuongHieu.tenThuongHieu for thuongHieu in thuongHieus">
-                                        <option value="">Chọn thương hiệu</option>
-                                    </select>
-                                    <input type="text" class="form-control" ng-model="thuongHieu.tenThuongHieu"
-                                        placeholder="Thêm thương hiệu">
-                                    <button class="btn btn-outline-primary" ng-click="themThuongHieu()">+ Thêm</button>
-                                </div>
-                            </div>
-
-                            <div class="d-flex gap-2">
-                                <button class="btn btn-primary" type="button" ng-click="submitData()">Thêm mới</button>
-                                <button class="btn btn-secondary" type="button" ng-click="resetForm()">Làm mới</button>
-                                <button class="btn btn-danger" type="button" ng-click="anFormThemSanPham()">Hủy</button>
-                            </div>
-                        </form>
-                        <form ng-submit="submitDatachiTietSanPham()"> <!-- Chỉnh sửa từ submitDataChiTietSanPham -->
-
-                            <!-- Tên sản phẩm -->
-                            <div>
-                                <label>Tên sản phẩm:</label>
-                                <select ng-model="chiTietSanPham.sanPham.id"
-                                    ng-options="sanPham.id as sanPham.tenSanPham for sanPham in sanPhams">
-                                    <option value="">Chọn tên sản phẩm</option>
-                                </select>
-                            </div>
-
-                            <!-- Kích cỡ -->
-                            <div>
-                                <label>Kích cỡ:</label>
-                                <select ng-model="chiTietSanPham.kichCo.id"
-                                    ng-options="kichCo.id as kichCo.soKichCo for kichCo in kichCos">
-                                    <option value="">Chọn kích cỡ</option>
-                                </select>
-                            </div>
-
-                            <!-- Màu sắc -->
-                            <div>
-                                <label>Màu sắc:</label>
-                                <select ng-model="chiTietSanPham.mauSac.id"
-                                    ng-options="mauSac.id as mauSac.tenMauSac for mauSac in mauSacs">
-                                    <option value="">Chọn màu sắc</option>
-                                </select>
-                            </div>
-
-                            <!-- Đế giày -->
-                            <div>
-                                <label>Đế giày:</label>
-                                <select ng-model="chiTietSanPham.deGiay.id"
-                                    ng-options="deGiay.id as deGiay.tenDeGiay for deGiay in deGiays">
-                                    <option value="">Chọn đế giày</option>
-                                </select>
-                            </div>
-
-                            <!-- Chất liệu -->
-                            <div>
-                                <label>Chất liệu:</label>
-                                <select ng-model="chiTietSanPham.chatLieu.id"
-                                    ng-options="chatLieu.id as chatLieu.tenChatLieu for chatLieu in chatLieus">
-                                    <option value="">Chọn chất liệu</option>
-                                </select>
-                            </div>
-
-                            <!-- Số lượng -->
-                            <div>
-                                <label>Số lượng:</label>
-                                <input type="number" ng-model="chiTietSanPham.soLuong" placeholder="Nhập số lượng"
-                                    min="1">
-                            </div>
-
-                            <!-- Giá bán -->
-                            <div>
-                                <label>Giá bán:</label>
-                                <input type="number" ng-model="chiTietSanPham.giaBan" placeholder="Nhập giá bán"
-                                    min="0">
-                            </div>
-
-                            <!-- Giá nhập -->
-                            <div>
-                                <label>Giá nhập:</label>
-                                <input type="number" ng-model="chiTietSanPham.giaNhap" placeholder="Nhập giá nhập"
-                                    min="0">
-                            </div>
-
-                            <!-- Mô tả -->
-                            <div>
-                                <label>Mô tả:</label>
-                                <input type="text" ng-model="chiTietSanPham.moTa" placeholder="Nhập mô tả sản phẩm">
-                            </div>
-
-                            <!-- Nút Thêm mới -->
-                            <button type="submit">Thêm mới</button>
-                        </form>
-
                     </div>
 
                 </div>

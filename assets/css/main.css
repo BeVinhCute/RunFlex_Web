@@ -101,5 +101,31 @@ input[type="text"] {
 .toast-info {
   background-color: #17a2b8 !important; /* Màu xanh dương cho thông tin */
 }
+/* Đặt vị trí của container để các danh sách hiển thị chính xác */
+        
+.dropdown-container {
+  position: relative;
+  display: inline-block;
+}
+/* Ẩn danh sách theo mặc định */
 
+.dropdown-list {
+  display: none;
+  position: absolute;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  padding: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 100;
+  width: 200px;
+  /* Đặt chiều rộng tùy ý */
+}
+/* Hiển thị danh sách khi ng-show=true */
+
+.dropdown-container:hover .dropdown-list {
+  display: block;
+}
+.sidebar-item.active .submenu {
+  display: block; /* Hiển thị khi mục cha được chọn */
+}
 

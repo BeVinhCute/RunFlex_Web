@@ -101,7 +101,7 @@
 
                     <!-- Nút sửa -->
                     <div class="text-end">
-                        <button class="btn btn-primary" ng-click="toggleEditMode()">Sửa</button>
+                        <button class="btn btn-primary" ng-click="toggleEditMode()">Sửa Sản Phẩm</button>
                     </div>
 
                     <!-- Form chỉnh sửa -->
@@ -139,39 +139,28 @@
                         <table class="table table-bordered table-hover">
                             <thead class="table-dark">
                                 <tr>
-                                    <th>ID</th>
+                                    <th>#</th>
                                     <th>Tên</th>
                                     <th>Đế giày</th>
-                                    <th>Kích cỡ</th>
                                     <th>Chất liệu</th>
-                                    <th>Màu sắc</th>
                                     <th>Số lượng</th>
-                                    <th>Giá nhập</th>
                                     <th>Giá bán</th>
                                     <th>Hành động</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr ng-repeat="chiTietSanPham in chiTietSanPhamByIDs">
-                                    <td>{{ chiTietSanPham.id }}</td>
-                                    <td>{{ chiTietSanPham.tenChiTietSanPham }}</td>
+                                    <td>{{$index + 1}}</td>
+                                    <td>{{chiTietSanPham.sanPham.tenSanPham}}[{{chiTietSanPham.mauSac.tenMauSac}} -
+                                        {{chiTietSanPham.kichCo.soKichCo}}]</td>
                                     <td>{{ chiTietSanPham.deGiay.tenDeGiay }}</td>
-                                    <td>{{ chiTietSanPham.kichCo.soKichCo }}</td>
                                     <td>{{ chiTietSanPham.chatLieu.tenChatLieu }}</td>
-                                    <td>{{ chiTietSanPham.mauSac.tenMauSac }}</td>
 
                                     <!-- Chỉnh sửa số lượng -->
                                     <td>
                                         <input type="number" class="form-control" ng-model="chiTietSanPham.soLuong"
                                             ng-if="chiTietSanPham.isEditing">
                                         <span ng-if="!chiTietSanPham.isEditing">{{ chiTietSanPham.soLuong }}</span>
-                                    </td>
-
-                                    <!-- Chỉnh sửa giá nhập -->
-                                    <td>
-                                        <input type="number" class="form-control" ng-model="chiTietSanPham.giaNhap"
-                                            ng-if="chiTietSanPham.isEditing">
-                                        <span ng-if="!chiTietSanPham.isEditing">{{ chiTietSanPham.giaNhap }}</span>
                                     </td>
 
                                     <!-- Chỉnh sửa giá bán -->
@@ -191,6 +180,7 @@
                                         <!-- Nút Xóa -->
                                         <button class="btn btn-danger btn-sm"
                                             ng-click="deleteData(chiTietSanPham.id)">Xóa</button>
+
                                     </td>
                                 </tr>
                             </tbody>
@@ -200,6 +190,7 @@
                 </div>
             </div>
         </div>
+    </div>
 </body>
 
 

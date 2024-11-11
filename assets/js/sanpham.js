@@ -26,25 +26,6 @@ app.controller("sanPhamController", function ($scope, $http) {
       );
   };
 
-  // GET: danh sách kích cỡ
-  $http.get("http://localhost:8080/kichco").then(function (response) {
-    $scope.kichCos = response.data;
-  });
-
-  // GET: danh sách màu sắc
-  $http.get("http://localhost:8080/mausac").then(function (response) {
-    $scope.mauSacs = response.data;
-  });
-
-  // GET: danh sách đế giày
-  $http.get("http://localhost:8080/degiay").then(function (response) {
-    $scope.deGiays = response.data;
-  });
-
-  // GET: danh sách chất liệu
-  $http.get("http://localhost:8080/chatlieu").then(function (response) {
-    $scope.chatLieus = response.data;
-  });
   // GET: lấy danh mục
   $http.get("http://localhost:8080/danhmuc").then(
     function (response) {
@@ -195,7 +176,7 @@ app.controller("sanPhamController", function ($scope, $http) {
       .post("http://localhost:8080/chitietsanpham", $scope.chiTietSanPham)
       .then(
         function (response) {
-          console.log("Tạo chi tiết sản phẩm thành công");
+          toastr.success("Tạo chi tiết sản phẩm thành công!");
         },
         function (error) {
           console.error("Lỗi khi tạo chi tiết sản phẩm:", error);
