@@ -36,6 +36,23 @@ app.controller("chiTietSanPhamController", function ($scope, $http, $location) {
         console.error("Lỗi khi lấy lại dữ liệu chi tiết sản phẩm:", error);
         $scope.chiTietSanPhams = [];
       });
+    $http
+      .get("http://localhost:8080/thuonghieu")
+      .then(function (response) {
+        $scope.thuongHieus = response.data;
+      })
+      .catch(function (error) {
+        toastr.error("Lỗi khi lấy dữ liệu thương hiệu", "Thông báo");
+      });
+
+    $http
+      .get("http://localhost:8080/danhmuc")
+      .then(function (response) {
+        $scope.danhMucs = response.data;
+      })
+      .catch(function (error) {
+        toastr.error("Lỗi khi lấy dữ liệu danh mục", "Thông báo");
+      });
   };
 
   // Lấy danh sách Thương Hiệu
@@ -117,6 +134,21 @@ app.controller("chiTietSanPhamController", function ($scope, $http, $location) {
       }
     });
   };
+  $scope.xoaSanPham = function (sp) {
+    // Xóa sản phẩm khỏi mảng sanPhamPreview
+    var index = $scope.sanPhamPreview.indexOf(sp);
+    if (index > -1) {
+      $scope.sanPhamPreview.splice(index, 1); // Xóa phần tử tại vị trí index
+      toastr.success("Sản phẩm đã được xóa thành công!");
+    } else {
+      toastr.error("Không tìm thấy sản phẩm cần xóa.");
+    }
+
+    // Kiểm tra lại để ẩn bảng nếu không còn sản phẩm
+    if ($scope.sanPhamPreview.length === 0) {
+      $scope.isTableVisible = false; // Ẩn bảng khi không còn sản phẩm
+    }
+  };
 
   $scope.themSanPham = function () {
     // Lọc các sản phẩm đã được chọn (sp.chonThem === true)
@@ -158,6 +190,53 @@ app.controller("chiTietSanPhamController", function ($scope, $http, $location) {
       .catch(function (error) {
         console.error("Lỗi khi tạo:", error);
       });
+  };
+
+  $scope.isEditing = false;
+
+  $scope.toggleEditMode = function (sanPham) {
+    // Lưu ID sản phẩm cần sửa
+    $scope.isEditing = !$scope.isEditing;
+
+    if ($scope.isEditing) {
+      // Gửi yêu cầu API để lấy chi tiết sản phẩm
+      $http
+        .get(`http://localhost:8080/sanpham/${sanPham.id}`)
+        .then(function (response) {
+          $scope.editData = response.data; // Gán dữ liệu vào editData
+          console.log($scope.editData); // Kiểm tra dữ liệu đã được gán chưa
+        })
+        .catch(function (error) {
+          toastr.error("Lỗi khi lấy thông tin sản phẩm", "Thông báo");
+        });
+    } else {
+      $scope.editData = {}; // Reset dữ liệu khi thoát khỏi chế độ chỉnh sửa
+    }
+  };
+
+  $scope.updateSanPham = function (editData) {
+    console.log(editData); // Kiểm tra dữ liệu trong editData
+    if (editData.id) {
+      const updatedData = {
+        id: editData.id,
+        thuongHieu: editData.thuongHieu,
+        danhMuc: editData.danhMuc,
+        // Include other fields as needed
+      };
+
+      $http
+        .put(`http://localhost:8080/sanpham/${editData.id}`, updatedData)
+        .then(function (response) {
+          toastr.success("Cập nhật thành công!", "Thông báo");
+          $scope.isEditing = false; // Exit editing mode
+          $scope.loadData(); // Refresh product details
+        })
+        .catch(function (error) {
+          toastr.error("Có lỗi xảy ra khi cập nhật!", "Thông báo");
+        });
+    } else {
+      toastr.error("ID không hợp lệ!", "Thông báo");
+    }
   };
 
   $scope.updateData = function (chiTietSanPham) {

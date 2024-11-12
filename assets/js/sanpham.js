@@ -146,7 +146,6 @@ app.controller("sanPhamController", function ($scope, $http) {
   $scope.anFormThemSanPham = function () {
     $scope.showAddForm = false;
   };
-  const app = angular.module("myApp", []);
 
   $scope.sanPham = {
     id: null,
@@ -171,16 +170,4 @@ app.controller("sanPhamController", function ($scope, $http) {
       console.error("Lỗi khi lấy dữ liệu số lượng:", error);
     }
   );
-  $scope.submitDataChiTietSanPham = function () {
-    $http
-      .post("http://localhost:8080/chitietsanpham", $scope.chiTietSanPham)
-      .then(
-        function (response) {
-          toastr.success("Tạo chi tiết sản phẩm thành công!");
-        },
-        function (error) {
-          console.error("Lỗi khi tạo chi tiết sản phẩm:", error);
-        }
-      );
-  };
 });

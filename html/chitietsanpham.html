@@ -99,17 +99,18 @@
                         </div>
                     </div>
 
-                    <!-- Nút sửa -->
                     <div class="text-end">
-                        <button class="btn btn-primary" ng-click="toggleEditMode()">Sửa Sản Phẩm</button>
+                        <button class="btn btn-warning" ng-click="toggleEditMode(sanPham)">
+                            <i class="bi bi-pencil-square"></i> Sửa Sản Phẩm
+                        </button>
                     </div>
 
-                    <!-- Form chỉnh sửa -->
-                    <!-- Form chỉnh sửa -->
-                    <!-- Form chỉnh sửa -->
+
+
+
                     <div ng-if="isEditing" class="mt-4">
                         <h5>Chỉnh sửa thông tin</h5>
-                        <form ng-submit="updateData()">
+                        <form ng-submit="updateSanPham(editData)">
                             <div class="mb-3">
                                 <label for="thuongHieu" class="form-label">Thương Hiệu</label>
                                 <select class="form-control" ng-model="editData.thuongHieu"
@@ -130,6 +131,8 @@
                             <button type="button" class="btn btn-secondary" ng-click="toggleEditMode()">Hủy</button>
                         </form>
                     </div>
+
+
 
 
 

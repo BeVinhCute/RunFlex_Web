@@ -2,10 +2,10 @@ var app = angular.module("myApp", []);
 
 app.controller("NhanVienController", function ($scope, $http) {
   $scope.nhanViens = [];
-  $scope.newNhanVien = {};
-  $scope.selectedNhanVien = {};
+  $scope.formData = {}; // Dùng đối tượng này cho cả thêm mới và sửa
   $scope.editMode = false;
 
+  // Load dữ liệu ban đầu
   // Load dữ liệu ban đầu
   $scope.loadData = function () {
     $http.get("http://localhost:8080/nhanvien/all").then(
@@ -24,13 +24,20 @@ app.controller("NhanVienController", function ($scope, $http) {
     );
   };
 
-  $scope.addNhanVien = function () {
-    console.log($scope.newNhanVien); // Kiểm tra dữ liệu
-    $http.post("http://localhost:8080/nhanvien", $scope.newNhanVien).then(
+  $scope.addNhanVien = function (formData) {
+    formData.maNhanVien = "NV" + new Date().getTime(); // Tạo mã nhân viên
+
+    // Kiểm tra các trường bắt buộc
+    if (!formData.matKhau || !formData.cccd || !formData.ngaySinh) {
+      toastr.error("Vui lòng điền đầy đủ thông tin bắt buộc.");
+      return;
+    }
+
+    $http.post("http://localhost:8080/nhanvien", formData).then(
       function (response) {
         $scope.nhanViens.push(response.data);
-        resetForm();
         toastr.success("Thêm nhân viên thành công!");
+        resetForm();
       },
       function (error) {
         console.error("Lỗi khi thêm:", error);
@@ -39,47 +46,18 @@ app.controller("NhanVienController", function ($scope, $http) {
     );
   };
 
-  $scope.updateNhanVien = function (selectedNhanVien) {
-    console.log(selectedNhanVien); // Kiểm tra dữ liệu
-    if (selectedNhanVien.id) {
-      $http
-        .put(
-          `http://localhost:8080/nhanvien/${selectedNhanVien.id}`,
-          selectedNhanVien
-        )
-        .then(
-          function (response) {
-            toastr.success("Cập nhật nhân viên thành công!");
-            $scope.loadData(); // Làm mới dữ liệu sau khi cập nhật
-          },
-          function (error) {
-            console.error("Lỗi khi cập nhật:", error);
-            toastr.error("Có lỗi xảy ra khi cập nhật.");
-          }
-        );
-    } else {
-      toastr.error("ID nhân viên không hợp lệ.");
-    }
-  };
-
-  $scope.updateNhanVien = function (selectedNhanVien) {
-    console.log(selectedNhanVien); // Kiểm tra dữ liệu
-    if (selectedNhanVien.id) {
-      $http
-        .put(
-          `http://localhost:8080/nhanvien/${selectedNhanVien.id}`,
-          selectedNhanVien
-        )
-        .then(
-          function (response) {
-            toastr.success("Cập nhật nhân viên thành công!");
-            $scope.loadData(); // Làm mới dữ liệu sau khi cập nhật
-          },
-          function (error) {
-            console.error("Lỗi khi cập nhật:", error);
-            toastr.error("Có lỗi xảy ra khi cập nhật.");
-          }
-        );
+  $scope.updateNhanVien = function (formData) {
+    if (formData.id) {
+      $http.put(`http://localhost:8080/nhanvien/${formData.id}`, formData).then(
+        function (response) {
+          toastr.success("Cập nhật nhân viên thành công!");
+          resetForm(); // Reset form sau khi cập nhật thành công
+        },
+        function (error) {
+          console.error("Lỗi khi cập nhật:", error);
+          toastr.error("Có lỗi xảy ra khi cập nhật.");
+        }
+      );
     } else {
       toastr.error("ID nhân viên không hợp lệ.");
     }
@@ -101,40 +79,18 @@ app.controller("NhanVienController", function ($scope, $http) {
     }
   };
 
-  // Chỉnh sửa nhân viên
   $scope.editNhanVien = function (nhanVien) {
-    $("#detailsModal").modal("hide");
-    $scope.selectedNhanVien = angular.copy(nhanVien);
+    $scope.formData = angular.copy(nhanVien); // Sao chép dữ liệu nhân viên được chọn
     $scope.editMode = true;
-    $("#editModal").modal("show");
+    $("#detailsModal").modal("hide"); // Đóng modal chi tiết
+    $("#editModal").modal("show"); // Mở modal chỉnh sửa
   };
 
   // Mở modal thêm nhân viên
   $scope.openAddModal = function () {
-    // Đặt lại đối tượng nhân viên mới với các giá trị rỗng
-    $scope.newNhanVien = {
-      id: null,
-      maNhanVien: null,
-      tenNhanVien: "",
-      email: "",
-      soDienThoai: "",
-      diaChi: "",
-      ngaySinh: null,
-      ngayTuyenDung: null,
-      ngayNghiViec: null,
-      vaiTro: null,
-      trangThai: null,
-      cccd: "",
-      tenTaiKhoan: "",
-    };
-
-    // Đặt chế độ chỉnh sửa là false để đảm bảo là chế độ thêm mới
-    $scope.editMode = false;
-
-    // Đóng tất cả các modal khác trước khi mở modal mới
+    resetForm(); // Gọi hàm resetForm để thiết lập lại form
+    $scope.editMode = false; // Đặt chế độ chỉnh sửa là false để đảm bảo là chế độ thêm mới
     $("#detailsModal").modal("hide"); // Đảm bảo đóng modal chi tiết nếu có
-
-    // Mở modal thêm nhân viên
     $("#editModal").modal("show"); // Mở modal thêm nhân viên
   };
 
@@ -172,19 +128,35 @@ app.controller("NhanVienController", function ($scope, $http) {
 
   $scope.submitData = function () {
     if ($scope.editMode) {
-      $scope.updateNhanVien($scope.selectedNhanVien.id);
+      // Cập nhật nhân viên
+      $scope.updateNhanVien($scope.formData);
     } else {
-      $scope.addNhanVien();
+      // Thêm mới nhân viên
+      $scope.addNhanVien($scope.formData);
     }
   };
 
-  // Reset form sau khi thao tác
+  // Reset form
   function resetForm() {
-    $scope.newNhanVien = {};
-    $scope.selectedNhanVien = {};
+    $scope.formData = {
+      id: null,
+      maNhanVien: null,
+      tenNhanVien: "",
+      email: "",
+      soDienThoai: "",
+      diaChi: "",
+      ngaySinh: null,
+      ngayTuyenDung: null,
+      ngayNghiViec: null,
+      vaiTro: null,
+      trangThai: null,
+      cccd: "",
+      tenTaiKhoan: "",
+      matKhau: "",
+    };
     $scope.editMode = false;
-    $("#editModal").modal("hide");
-    $scope.loadData();
+    $("#editModal").modal("hide"); // Đóng modal sau khi hoàn tất
+    $scope.loadData(); // Tải lại dữ liệu nhân viên
   }
 
   $scope.loadData();

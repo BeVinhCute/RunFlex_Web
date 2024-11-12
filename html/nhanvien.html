@@ -36,11 +36,12 @@
                     <i class="fas fa-plus"></i> Thêm Nhân Viên
                 </button>
 
+
                 <!-- Bảng Nhân Viên -->
                 <table class="table table-striped">
                     <thead>
                         <tr>
-                            <th>ID</th>
+                            <th>#</th>
                             <th>Mã Nhân Viên</th>
                             <th>Tên Nhân Viên</th>
                             <th>Email</th>
@@ -53,7 +54,7 @@
                     </thead>
                     <tbody>
                         <tr ng-repeat="nhanVien in nhanViens">
-                            <td>{{ nhanVien.id }}</td>
+                            <td>{{$index + 1}}</td>
                             <td>{{ nhanVien.maNhanVien }}</td>
                             <td>{{ nhanVien.tenNhanVien }}</td>
                             <td>{{ nhanVien.email }}</td>
@@ -78,7 +79,6 @@
                     </tbody>
                 </table>
 
-                <!-- Modal Thêm/Sửa Nhân Viên -->
                 <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel"
                     aria-hidden="true">
                     <div class="modal-dialog">
@@ -90,84 +90,80 @@
                             </div>
                             <div class="modal-body">
                                 <form ng-submit="submitData()">
-                                    <div class="mb-3">
+                                    <div class="mb-3" ng-if="editMode">
                                         <label for="maNhanVien" class="form-label">Mã Nhân Viên</label>
-                                        <input type="text" class="form-control" ng-model="selectedNhanVien.maNhanVien"
-                                            required>
+                                        <input type="text" class="form-control" ng-model="formData.maNhanVien" required
+                                            readonly>
                                     </div>
                                     <div class="mb-3">
                                         <label for="tenNhanVien" class="form-label">Tên Nhân Viên</label>
-                                        <input type="text" class="form-control" ng-model="selectedNhanVien.tenNhanVien"
+                                        <input type="text" class="form-control" ng-model="formData.tenNhanVien"
                                             required>
                                     </div>
                                     <div class="mb-3">
                                         <label for="email" class="form-label">Email</label>
-                                        <input type="email" class="form-control" ng-model="selectedNhanVien.email"
-                                            required>
+                                        <input type="email" class="form-control" ng-model="formData.email" required>
                                     </div>
                                     <div class="mb-3">
                                         <label for="soDienThoai" class="form-label">Số Điện Thoại</label>
-                                        <input type="text" class="form-control" ng-model="selectedNhanVien.soDienThoai"
+                                        <input type="text" class="form-control" ng-model="formData.soDienThoai"
                                             required>
                                     </div>
                                     <div class="mb-3">
                                         <label for="diaChi" class="form-label">Địa Chỉ</label>
-                                        <input type="text" class="form-control" ng-model="selectedNhanVien.diaChi"
-                                            required>
+                                        <input type="text" class="form-control" ng-model="formData.diaChi" required>
                                     </div>
                                     <div class="mb-3">
                                         <label for="ngaySinh" class="form-label">Ngày Sinh</label>
-                                        <input type="date" class="form-control" ng-model="selectedNhanVien.ngaySinh"
-                                            required>
+                                        <input type="date" class="form-control" ng-model="formData.ngaySinh" required>
                                     </div>
                                     <div class="mb-3">
                                         <label for="ngayTuyenDung" class="form-label">Ngày Tuyển Dụng</label>
-                                        <input type="date" class="form-control"
-                                            ng-model="selectedNhanVien.ngayTuyenDung" required>
+                                        <input type="date" class="form-control" ng-model="formData.ngayTuyenDung"
+                                            required>
                                     </div>
                                     <div class="mb-3">
                                         <label for="ngayNghiViec" class="form-label">Ngày Nghỉ Việc</label>
-                                        <input type="date" class="form-control"
-                                            ng-model="selectedNhanVien.ngayNghiViec">
+                                        <input type="date" class="form-control" ng-model="formData.ngayNghiViec">
                                     </div>
                                     <div class="mb-3">
                                         <label for="vaiTro" class="form-label">Vai Trò</label>
-                                        <select class="form-select" ng-model="selectedNhanVien.vaiTro" required>
-                                            <option value="0" ng-selected="selectedNhanVien.vaiTro == 0">ADMIN</option>
-                                            <option value="1" ng-selected="selectedNhanVien.vaiTro == 1">Nhân Viên
-                                            </option>
+                                        <select class="form-select" ng-model="formData.vaiTro" required>
+                                            <option value="0" ng-model="formData.trangThai">ADMIN</option>
+                                            <option value="1" ng-model="formData.trangThai">Nhân Viên</option>
                                         </select>
                                     </div>
                                     <div class="mb-3">
                                         <label for="trangThai" class="form-label">Trạng Thái</label>
-                                        <select class="form-select" ng-model="selectedNhanVien.trangThai" required>
-                                            <option value="1" ng-selected="selectedNhanVien.trangThai == 1">Hoạt Động
-                                            </option>
-                                            <option value="0" ng-selected="selectedNhanVien.trangThai == 0">Ngưng Hoạt
-                                                Động</option>
+                                        <select class="form-select" ng-model="formData.trangThai" required>
+                                            <option value="1" ng-model="formData.trangThai">Hoạt Động</option>
+                                            <option value="0" ng-model="formData.trangThai">Ngưng Hoạt Động</option>
                                         </select>
                                     </div>
                                     <div class="mb-3">
                                         <label for="cccd" class="form-label">CCCD</label>
-                                        <input type="text" class="form-control" ng-model="selectedNhanVien.cccd"
-                                            required>
+                                        <input type="text" class="form-control" ng-model="formData.cccd" required>
                                     </div>
                                     <div class="mb-3">
                                         <label for="tenTaiKhoan" class="form-label">Tên Tài Khoản</label>
-                                        <input type="text" class="form-control" ng-model="selectedNhanVien.tenTaiKhoan"
+                                        <input type="text" class="form-control" ng-model="formData.tenTaiKhoan"
                                             required>
                                     </div>
                                     <div class="mb-3">
                                         <label for="matKhau" class="form-label">Mật Khẩu</label>
-                                        <input type="password" class="form-control" ng-model="selectedNhanVien.matKhau"
+                                        <input type="password" class="form-control" ng-model="formData.matKhau"
                                             required>
                                     </div>
+
                                     <button type="submit" class="btn btn-primary">Lưu</button>
                                 </form>
                             </div>
                         </div>
                     </div>
                 </div>
+
+
+
 
 
                 <!-- Modal Chi Tiết Nhân Viên -->
@@ -204,6 +200,7 @@
                                     ng-click="editNhanVien(selectedNhanVien); $('#detailsModal').modal('hide');">
                                     <i class="fas fa-edit"></i> Sửa
                                 </button>
+
 
                             </div>
                         </div>

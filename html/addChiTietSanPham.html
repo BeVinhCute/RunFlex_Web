@@ -122,8 +122,9 @@
                         <button type="button" class="btn btn-success" ng-click="taoSanPham()">Tạo Sản Phẩm</button>
                     </form>
 
-                    <h3 class="mt-5">Danh sách sản phẩm sẽ thêm</h3>
+
                     <table class="table table-bordered mt-3">
+                        <h3 class="mt-5">Danh sách sản phẩm sẽ thêm</h3>
                         <thead class="table-dark">
                             <tr>
                                 <th>Chọn</th>
@@ -134,22 +135,26 @@
                                 <th>Chất liệu</th>
                                 <th>Danh mục</th>
                                 <th>Thương hiệu</th>
+                                <th>Thao tác</th>
                             </tr>
                         </thead>
                         <tbody ng-if="sanPhamPreview.length > 0">
                             <tr ng-repeat="sp in sanPhamPreview">
                                 <td><input type="checkbox" ng-model="sp.chonThem"></td>
-                                <td>{{sp.sanPham.tenSanPham}}[{{sp.mauSac.tenMauSac}} - {{sp.kichCo.soKichCo}}]</td>
+                                <td>{{sp.sanPham.tenSanPham}} [{{sp.mauSac.tenMauSac}} - {{sp.kichCo.soKichCo}}]</td>
                                 <td><input type="number" ng-model="sp.soLuong"></td>
                                 <td><input type="number" ng-model="sp.giaBan"></td>
                                 <td>{{sp.deGiay.tenDeGiay}}</td>
                                 <td>{{sp.chatLieu.tenChatLieu}}</td>
                                 <td>{{sp.danhMuc.tenDanhMuc}}</td>
                                 <td>{{sp.thuongHieu.tenThuongHieu}}</td>
+                                <td><button class="btn btn-danger" ng-click="xoaSanPham(sp)">Xóa</button></td>
+
                             </tr>
                         </tbody>
                     </table>
                     <button type="button" class="btn btn-primary" ng-click="themSanPham()">Thêm sản phẩm</button>
+
                 </div>
             </div>
         </div>
