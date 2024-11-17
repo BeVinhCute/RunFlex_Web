@@ -3,290 +3,215 @@ var app = angular.module("myApp", []);
 const urlParams = new URLSearchParams(window.location.search);
 const id = urlParams.get("id");
 
-app.controller("chiTietSanPhamController", function ($scope, $http, $location) {
+app.controller("chiTietSanPhamController", function ($scope, $http, $window) {
+  $scope.isProductCreated = false;
+  $scope.availableImages = [];
+  $scope.sanPhamPreviewBackup = [];
+  $scope.chiTietSanPham = {};
+  $scope.currentMauSac = {}; // Khởi tạo đối tượng rỗng nếu mauSac không có giá trị
+  $scope.currentMauSac.selectedImages = []; // Khởi tạo mảng nếu chưa có
+
+  // Tải dữ liệu ban đầu
+  $scope.loadData = function () {
+    const requests = [
+      $http.get("http://localhost:8080/thuonghieu"),
+      $http.get("http://localhost:8080/danhmuc"),
+      $http.get("http://localhost:8080/sanpham"),
+      $http.get("http://localhost:8080/kichco"),
+      $http.get("http://localhost:8080/mausac"),
+      $http.get("http://localhost:8080/degiay"),
+      $http.get("http://localhost:8080/chatlieu"),
+    ];
+
+    Promise.all(requests)
+      .then(function (responses) {
+        $scope.thuongHieus = responses[0].data;
+        $scope.danhMucs = responses[1].data;
+        $scope.sanPhams = responses[2].data;
+        $scope.kichCos = responses[3].data;
+        $scope.mauSacs = responses[4].data;
+        $scope.deGiays = responses[5].data;
+        $scope.chatLieus = responses[6].data;
+      })
+      .catch(function (error) {
+        toastr.error("Lỗi khi tải dữ liệu", "Thông báo");
+      });
+  };
+
+  // Lấy chi tiết sản phẩm theo ID
   $http
     .get(`http://localhost:8080/chitietsanpham/${id}`)
     .then(function (response) {
       $scope.chiTietSanPhamByIDs = response.data;
-      console.log(response.data);
-    });
-
-  $http
-    .get(`http://localhost:8080/chitietsanpham`)
-    .then(function (response) {
-      $scope.chiTietSanPhams = response.data;
-      console.log(response.data);
     })
     .catch(function (error) {
       console.error("Lỗi khi lấy chi tiết sản phẩm:", error);
-      $scope.chiTietSanPhams = [];
     });
 
-  $scope.chiTietSanPham = {};
-
-  $scope.loadData = function () {
-    // Lấy lại danh sách chi tiết sản phẩm sau khi xóa
-    $http
-      .get("http://localhost:8080/chitietsanpham")
-      .then(function (response) {
-        $scope.chiTietSanPhams = response.data;
-        console.log("Dữ liệu chi tiết sản phẩm được làm mới:", response.data);
-      })
-      .catch(function (error) {
-        console.error("Lỗi khi lấy lại dữ liệu chi tiết sản phẩm:", error);
-        $scope.chiTietSanPhams = [];
-      });
-    $http
-      .get("http://localhost:8080/thuonghieu")
-      .then(function (response) {
-        $scope.thuongHieus = response.data;
-      })
-      .catch(function (error) {
-        toastr.error("Lỗi khi lấy dữ liệu thương hiệu", "Thông báo");
-      });
-
-    $http
-      .get("http://localhost:8080/danhmuc")
-      .then(function (response) {
-        $scope.danhMucs = response.data;
-      })
-      .catch(function (error) {
-        toastr.error("Lỗi khi lấy dữ liệu danh mục", "Thông báo");
-      });
-  };
-
-  // Lấy danh sách Thương Hiệu
-  $http
-    .get("http://localhost:8080/thuonghieu")
-    .then(function (response) {
-      $scope.thuongHieus = response.data;
-    })
-    .catch(function (error) {
-      console.error("Lỗi khi lấy danh sách thương hiệu:", error);
-    });
-
-  // Lấy danh sách Danh Mục
-  $http
-    .get("http://localhost:8080/danhmuc")
-    .then(function (response) {
-      $scope.danhMucs = response.data;
-    })
-    .catch(function (error) {
-      console.error("Lỗi khi lấy danh sách danh mục:", error);
-    });
-
-  // Biến điều khiển chế độ chỉnh sửa
-  $scope.isEditing = false;
-
-  $scope.toggleEdit = function (chiTietSanPham) {
-    chiTietSanPham.isEditing = !chiTietSanPham.isEditing;
-    toastr.success("Cập nhật thành công!", "Thông báo");
-  };
-
-  // Lấy danh sách sản phẩm
-  $http.get("http://localhost:8080/sanpham").then(function (response) {
-    $scope.sanPhams = response.data;
-    console.log($scope.sanPhams);
-  });
-
-  // Lấy danh sách kích cỡ
-  $http.get("http://localhost:8080/kichco").then(function (response) {
-    $scope.kichCos = response.data;
-  });
-
-  // Lấy danh sách màu sắc
-  $http.get("http://localhost:8080/mausac").then(function (response) {
-    $scope.mauSacs = response.data;
-  });
-
-  // Lấy danh sách đế giày
-  $http.get("http://localhost:8080/degiay").then(function (response) {
-    $scope.deGiays = response.data;
-  });
-
-  // Lấy danh sách chất liệu
-  $http.get("http://localhost:8080/chatlieu").then(function (response) {
-    $scope.chatLieus = response.data;
-  });
-
-  //tạo sản phẩm
   $scope.taoSanPham = function () {
-    $scope.sanPhamPreview = [];
-
-    $scope.kichCos.forEach((kichCo) => {
+    $scope.kichCos.forEach(function (kichCo) {
       if (kichCo.selected) {
-        $scope.mauSacs.forEach((mauSac) => {
+        $scope.mauSacs.forEach(function (mauSac) {
           if (mauSac.selected) {
-            $scope.sanPhamPreview.push({
+            $scope.sanPhamPreviewBackup.push({
               sanPham: $scope.chiTietSanPham.sanPham,
               kichCo: kichCo,
               mauSac: mauSac,
-              soLuong: $scope.chiTietSanPham.soLuong,
-              giaBan: $scope.chiTietSanPham.giaBan,
+              soLuong: $scope.chiTietSanPham.soLuong || 0, // Gán giá trị mặc định nếu chưa có
+              giaBan: $scope.chiTietSanPham.giaBan || 0, // Gán giá trị mặc định nếu chưa có
               deGiay: $scope.chiTietSanPham.deGiay,
               chatLieu: $scope.chiTietSanPham.chatLieu,
               danhMuc: $scope.chiTietSanPham.sanPham.danhMuc,
               thuongHieu: $scope.chiTietSanPham.sanPham.thuongHieu,
               chonThem: false,
+              selectedImages: [], // Khởi tạo mảng ảnh rỗng
             });
           }
         });
       }
     });
+    $scope.isProductCreated = true;
   };
+
+  // Kiểm tra nếu ảnh đã được chọn
+  $scope.isImageSelected = function (image) {
+    return $scope.currentMauSac.selectedImages.some(function (img) {
+      return img.id === image.id;
+    });
+  };
+
+  $scope.loadColorImages = function (mauSac) {
+    // Tải ảnh cho màu sắc hiện tại
+    $http;
+    $http
+      .get(`http://localhost:8080/anhgiay?mauSacId=${mauSac.id}`)
+      .then(function (response) {
+        $scope.availableImages = response.data;
+        $scope.currentMauSac = mauSac;
+        $("#imageModal").modal("show");
+      })
+      .catch(function (error) {
+        if (error.status === 404) {
+          toastr.error("Không tìm thấy ảnh cho màu sắc này!", "Thông báo");
+        } else {
+          toastr.error(
+            "Lỗi khi tải ảnh từ máy chủ, vui lòng thử lại sau.",
+            "Thông báo"
+          );
+        }
+      });
+  };
+
+  // Thêm ảnh vào màu sắc
+  $scope.addImagesToColor = function () {
+    const selectedImages = $scope.availableImages.filter(function (image) {
+      return image.selected;
+    });
+
+    if (selectedImages.length === 0) {
+      toastr.error("Không có ảnh nào được chọn!", "Thông báo");
+      return;
+    }
+
+    // Khởi tạo danh sách nếu chưa có
+    $scope.currentMauSac.selectedImages =
+      $scope.currentMauSac.selectedImages || [];
+
+    // Thêm chỉ những ảnh mới, chưa có vào danh sách
+    selectedImages.forEach(function (image) {
+      if (
+        !$scope.currentMauSac.selectedImages.some(function (img) {
+          return img.id === image.id;
+        })
+      ) {
+        $scope.currentMauSac.selectedImages.push(image);
+      }
+    });
+
+    // Cập nhật lại dữ liệu cho sản phẩm trong sanPhamPreviewBackup
+    $scope.sanPhamPreviewBackup.forEach(function (sp) {
+      if (sp.mauSac.id === $scope.currentMauSac.id) {
+        sp.selectedImages = angular.copy($scope.currentMauSac.selectedImages);
+      }
+    });
+
+    $("#imageModal").modal("hide");
+    toastr.success("Thêm ảnh thành công cho màu sắc!", "Thông báo");
+  };
+
+  // Lấy URL của ảnh
+  $scope.getImageUrl = function (image) {
+    return (
+      "http://localhost:8080/anhgiay/images/" +
+      encodeURIComponent(image.tenURL.replace(/^\/images\//, ""))
+    );
+  };
+
+  // Xóa sản phẩm
   $scope.xoaSanPham = function (sp) {
-    // Xóa sản phẩm khỏi mảng sanPhamPreview
-    var index = $scope.sanPhamPreview.indexOf(sp);
+    const index = $scope.sanPhamPreviewBackup.indexOf(sp);
     if (index > -1) {
-      $scope.sanPhamPreview.splice(index, 1); // Xóa phần tử tại vị trí index
+      $scope.sanPhamPreviewBackup.splice(index, 1);
       toastr.success("Sản phẩm đã được xóa thành công!");
     } else {
       toastr.error("Không tìm thấy sản phẩm cần xóa.");
     }
-
-    // Kiểm tra lại để ẩn bảng nếu không còn sản phẩm
-    if ($scope.sanPhamPreview.length === 0) {
-      $scope.isTableVisible = false; // Ẩn bảng khi không còn sản phẩm
-    }
   };
 
-  $scope.themSanPham = function () {
-    // Lọc các sản phẩm đã được chọn (sp.chonThem === true)
-    const selectedProducts = $scope.sanPhamPreview.filter(function (sp) {
-      return sp.chonThem === true; // Lọc các sản phẩm có checkbox được chọn
-    });
-    // Kiểm tra nếu có sản phẩm được chọn
-    if (selectedProducts.length > 0) {
-      // Gửi dữ liệu lên server
-      $http
-        .post("http://localhost:8080/chitietsanpham", selectedProducts)
-        .then(function (response) {
-          console.log("Thêm sản phẩm thành công:", response.data);
-          toastr.success("Sản phẩm đã được thêm vào cơ sở dữ liệu.");
-        })
-        .catch(function (error) {
-          console.error("Lỗi khi thêm sản phẩm:", error);
-          toastr.error("Có lỗi khi thêm sản phẩm.");
-        });
-    } else {
-      toastr.warning("Chưa chọn sản phẩm nào để thêm.");
-    }
-  };
-
+  // Gửi dữ liệu sản phẩm
   $scope.submitData = function () {
     $http
       .post("http://localhost:8080/chitietsanpham", $scope.chiTietSanPham)
       .then(function (response) {
-        console.log("Tạo thành công:", response.data);
         toastr.success("Thêm mới thành công!", "Thông báo");
         const sanPhamId = response.data.sanPham.id;
         if (sanPhamId) {
-          // Sử dụng $window để chuyển hướng
           $window.location.href = `/html/chitietsanpham.html?id=${sanPhamId}`;
         } else {
-          console.error("Không có ID sản phẩm trong phản hồi.");
+          toastr.error("Không có ID sản phẩm trong phản hồi.", "Thông báo");
         }
       })
       .catch(function (error) {
-        console.error("Lỗi khi tạo:", error);
+        toastr.error("Có lỗi khi tạo sản phẩm!", "Thông báo");
       });
   };
 
-  $scope.isEditing = false;
-
-  $scope.toggleEditMode = function (sanPham) {
-    // Lưu ID sản phẩm cần sửa
-    $scope.isEditing = !$scope.isEditing;
-
-    if ($scope.isEditing) {
-      // Gửi yêu cầu API để lấy chi tiết sản phẩm
-      $http
-        .get(`http://localhost:8080/sanpham/${sanPham.id}`)
-        .then(function (response) {
-          $scope.editData = response.data; // Gán dữ liệu vào editData
-          console.log($scope.editData); // Kiểm tra dữ liệu đã được gán chưa
-        })
-        .catch(function (error) {
-          toastr.error("Lỗi khi lấy thông tin sản phẩm", "Thông báo");
-        });
-    } else {
-      $scope.editData = {}; // Reset dữ liệu khi thoát khỏi chế độ chỉnh sửa
-    }
-  };
-
-  $scope.updateSanPham = function (editData) {
-    console.log(editData); // Kiểm tra dữ liệu trong editData
-    if (editData.id) {
-      const updatedData = {
-        id: editData.id,
-        thuongHieu: editData.thuongHieu,
-        danhMuc: editData.danhMuc,
-        // Include other fields as needed
-      };
-
-      $http
-        .put(`http://localhost:8080/sanpham/${editData.id}`, updatedData)
-        .then(function (response) {
-          toastr.success("Cập nhật thành công!", "Thông báo");
-          $scope.isEditing = false; // Exit editing mode
-          $scope.loadData(); // Refresh product details
-        })
-        .catch(function (error) {
-          toastr.error("Có lỗi xảy ra khi cập nhật!", "Thông báo");
-        });
-    } else {
-      toastr.error("ID không hợp lệ!", "Thông báo");
-    }
-  };
-
+  // Cập nhật thông tin sản phẩm
   $scope.updateData = function (chiTietSanPham) {
-    if (chiTietSanPham.id) {
-      const updatedData = {
-        id: chiTietSanPham.id,
-        soLuong: chiTietSanPham.soLuong,
-        giaNhap: chiTietSanPham.giaNhap,
-        giaBan: chiTietSanPham.giaBan,
-      };
-
+    if (chiTietSanPham.isEditing) {
       $http
         .put(
           `http://localhost:8080/chitietsanpham/${chiTietSanPham.id}`,
-          updatedData
+          chiTietSanPham
         )
         .then(function (response) {
           toastr.success("Cập nhật thành công!", "Thông báo");
-          chiTietSanPham.isEditing = false; // Đóng form chỉnh sửa
-          // Gọi lại dữ liệu để làm mới giao diện
-          $scope.loadData(); // Hoặc gọi lại API để lấy dữ liệu mới
+          chiTietSanPham.isEditing = false;
+          $scope.loadData(); // Tải lại dữ liệu
         })
         .catch(function (error) {
           toastr.error("Có lỗi xảy ra khi cập nhật!", "Thông báo");
         });
     } else {
-      toastr.error("ID không hợp lệ!", "Thông báo");
+      chiTietSanPham.isEditing = true;
     }
   };
 
+  // Xóa thông tin sản phẩm
   $scope.deleteData = function (id) {
-    console.log("Deleting ID: ", id); // Kiểm tra ID đang xóa
     if (confirm("Bạn có chắc chắn muốn xóa chi tiết sản phẩm này?")) {
-      $http.delete(`http://localhost:8080/chitietsanpham/${id}`).then(
-        function (response) {
-          $scope.loadData(); // Gọi lại danh sách sau khi xóa
+      $http
+        .delete(`http://localhost:8080/chitietsanpham/${id}`)
+        .then(function (response) {
+          $scope.loadData(); // Tải lại dữ liệu sau khi xóa
           toastr.success("Xóa thành công!", "Thông báo");
-        },
-        function (error) {
-          console.error("Lỗi khi xóa:", error); // Ghi lại lỗi chi tiết
+        })
+        .catch(function (error) {
           toastr.error("Xóa thất bại. Vui lòng thử lại!", "Thông báo");
-
-          // Hiển thị thêm chi tiết lỗi
-          if (error.data) {
-            console.log("Chi tiết lỗi: ", error.data);
-          } else {
-            console.log("Không có dữ liệu lỗi trả về từ server.");
-          }
-        }
-      );
+        });
     }
   };
+
+  // Khởi động tải dữ liệu
+  $scope.loadData();
 });

@@ -98,42 +98,57 @@
                             </h5>
                         </div>
                     </div>
+                    <button class="btn btn-warning" ng-click="toggleEditMode(sanPham)">
+                        <i class="bi bi-pencil-square"></i> Sửa Sản Phẩm
+                    </button>
 
-                    <div class="text-end">
-                        <button class="btn btn-warning" ng-click="toggleEditMode(sanPham)">
-                            <i class="bi bi-pencil-square"></i> Sửa Sản Phẩm
-                        </button>
-                    </div>
-
-
-
-
-                    <div ng-if="isEditing" class="mt-4">
-                        <h5>Chỉnh sửa thông tin</h5>
-                        <form ng-submit="updateSanPham(editData)">
-                            <div class="mb-3">
-                                <label for="thuongHieu" class="form-label">Thương Hiệu</label>
-                                <select class="form-control" ng-model="editData.thuongHieu"
-                                    ng-options="thuongHieu.id as thuongHieu.tenThuongHieu for thuongHieu in thuongHieus">
-                                    <option value="">Chọn thương hiệu</option>
-                                </select>
+                    <!-- Modal Sửa Sản Phẩm -->
+                    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel"
+                        aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="editModalLabel">Chỉnh sửa Sản phẩm</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form>
+                                        <div class="mb-3">
+                                            <label for="productName" class="form-label">Tên sản phẩm</label>
+                                            <input type="text" class="form-control" id="productName"
+                                                ng-model="editData.sanPham.tenSanPham">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="brand" class="form-label">Thương hiệu</label>
+                                            <select class="form-select" id="brand"
+                                                ng-model="editData.sanPham.thuongHieu.id">
+                                                <option ng-repeat="thuongHieu in thuongHieus" value="{{thuongHieu.id}}">
+                                                    {{thuongHieu.tenThuongHieu}}
+                                                </option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="category" class="form-label">Danh mục</label>
+                                            <select class="form-select" id="category"
+                                                ng-model="editData.sanPham.danhMuc.id">
+                                                <option ng-repeat="danhMuc in danhMucs" value="{{danhMuc.id}}">
+                                                    {{danhMuc.tenDanhMuc}}
+                                                </option>
+                                            </select>
+                                        </div>
+                                        <!-- Thêm các trường dữ liệu khác cần sửa -->
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Đóng</button>
+                                    <button type="button" class="btn btn-primary" ng-click="saveChanges()">Lưu thay
+                                        đổi</button>
+                                </div>
                             </div>
-
-                            <div class="mb-3">
-                                <label for="danhMuc" class="form-label">Danh Mục</label>
-                                <select class="form-control" ng-model="editData.danhMuc"
-                                    ng-options="danhMuc.id as danhMuc.tenDanhMuc for danhMuc in danhMucs">
-                                    <option value="">Chọn danh mục</option>
-                                </select>
-                            </div>
-
-                            <button type="submit" class="btn btn-success">Lưu thay đổi</button>
-                            <button type="button" class="btn btn-secondary" ng-click="toggleEditMode()">Hủy</button>
-                        </form>
+                        </div>
                     </div>
-
-
-
 
 
                     <!-- Bảng chi tiết sản phẩm -->
@@ -154,7 +169,7 @@
                             <tbody>
                                 <tr ng-repeat="chiTietSanPham in chiTietSanPhamByIDs">
                                     <td>{{$index + 1}}</td>
-                                    <td>{{chiTietSanPham.sanPham.tenSanPham}}[{{chiTietSanPham.mauSac.tenMauSac}} -
+                                    <td>{{chiTietSanPham.sanPham.tenSanPham}} [{{chiTietSanPham.mauSac.tenMauSac}} -
                                         {{chiTietSanPham.kichCo.soKichCo}}]</td>
                                     <td>{{ chiTietSanPham.deGiay.tenDeGiay }}</td>
                                     <td>{{ chiTietSanPham.chatLieu.tenChatLieu }}</td>
@@ -176,18 +191,18 @@
                                     <!-- Nút hành động -->
                                     <td>
                                         <!-- Nút Sửa/Lưu -->
-                                        <button class="btn btn-warning btn-sm" ng-click="toggleEdit(chiTietSanPham)">
+                                        <button class="btn btn-warning btn-sm" ng-click="updateData(chiTietSanPham)">
                                             {{ chiTietSanPham.isEditing ? 'Lưu' : 'Sửa' }}
                                         </button>
 
                                         <!-- Nút Xóa -->
                                         <button class="btn btn-danger btn-sm"
                                             ng-click="deleteData(chiTietSanPham.id)">Xóa</button>
-
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
+
                     </div>
 
                 </div>

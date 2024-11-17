@@ -93,23 +93,28 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr ng-repeat="sanPham in sanPhams">
-                                        <td>{{$index + 1}}</td>
-                                        <td>{{ sanPham.tenSanPham }}</td>
-                                        <td>{{ soLuongData[sanPham.id] || 0 }}</td>
-                                        <td>{{ sanPham.danhMuc.tenDanhMuc }}</td>
-                                        <td>{{ sanPham.thuongHieu.tenThuongHieu }}</td>
-                                        <td>
-                                            <span
-                                                ng-class="{'badge bg-success': sanPham.trangThai == 1, 'badge bg-danger': sanPham.trangThai != 1}">
-                                                {{ sanPham.trangThai == 1 ? 'Đang Bán' : 'Ngưng Bán' }}
-                                            </span>
+                                    <tr ng-repeat="sp in sanPhamPreviewBackup | filter:{ 'mauSac': mauSac }">
+                                        <td><input type="checkbox" ng-model="sp.chonThem"></td>
+                                        <td>{{sp.sanPham.tenSanPham}} [{{sp.mauSac.tenMauSac}} - {{sp.kichCo.soKichCo}}]
                                         </td>
+                                        <td><input type="number" ng-model="sp.soLuong"
+                                                class="form-control form-control-sm"></td>
+                                        <td><input type="number" ng-model="sp.giaBan"
+                                                class="form-control form-control-sm"></td>
+                                        <td>{{sp.deGiay.tenDeGiay}}</td>
+                                        <td>{{sp.chatLieu.tenChatLieu}}</td>
+                                        <td>{{sp.danhMuc.tenDanhMuc}}</td>
+                                        <td>{{sp.thuongHieu.tenThuongHieu}}</td>
                                         <td>
-                                            <a ng-href="chitietsanpham.html?id={{ sanPham.id }}"
-                                                class="btn btn-info btn-sm">Chi tiết</a>
+                                            <button class="btn btn-danger btn-sm" ng-click="xoaSanPham(sp)">
+                                                <i class="fas fa-trash"></i> Xóa
+                                            </button>
+                                            <button class="btn btn-info btn-sm" ng-click="loadColorImages(mauSac)">
+                                                <i class="fas fa-image"></i> Thêm ảnh
+                                            </button>
                                         </td>
                                     </tr>
+
                                 </tbody>
                             </table>
                         </div>
