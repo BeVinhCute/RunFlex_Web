@@ -117,7 +117,6 @@
                                 <tr>
                                     <th style="width: 5%;">Chọn</th>
                                     <th style="width: 25%;">Sản phẩm</th>
-                                    <th style="width: 15%;">Ảnh</th> <!-- Cột mới cho ảnh -->
                                     <th style="width: 20%;">Số lượng</th>
                                     <th style="width: 20%;">Đơn giá</th>
                                     <th style="width: 8%;">Đế giày</th>
@@ -127,17 +126,10 @@
                                     <th style="width: 10%;">Thao tác</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr ng-repeat="sp in sanPhamPreviewBackup | filter:{'mauSac': mauSac}">
+                            <tbody ng-if="sanPhamPreview.length > 0">
+                                <tr ng-repeat="sp in sanPhamPreview | filter:{'mauSac': mauSac}">
                                     <td><input type="checkbox" ng-model="sp.chonThem"></td>
                                     <td>{{sp.sanPham.tenSanPham}} [{{sp.mauSac.tenMauSac}} - {{sp.kichCo.soKichCo}}]
-                                    </td>
-                                    <td>
-                                        <div class="image-container">
-                                            <img ng-repeat="image in sp.selectedImages" ng-src="{{getImageUrl(image)}}"
-                                                class="img-thumbnail" alt="Ảnh sản phẩm"
-                                                style="width: 50px; height: 50px; margin: 2px;">
-                                        </div>
                                     </td>
                                     <td><input type="number" ng-model="sp.soLuong" class="form-control form-control-sm">
                                     </td>
@@ -148,26 +140,36 @@
                                     <td>{{sp.danhMuc.tenDanhMuc}}</td>
                                     <td>{{sp.thuongHieu.tenThuongHieu}}</td>
                                     <td>
+                                        <button type="button" class="btn btn-primary" ng-click="openImageModal(sp)">
+                                            <i class="fas fa-image"></i> Thêm ảnh
+                                        </button>
+                                    </td>
+                                    <td>
                                         <button class="btn btn-danger btn-sm" ng-click="xoaSanPham(sp)">
                                             <i class="fas fa-trash"></i> Xóa
                                         </button>
-                                        <button class="btn btn-info btn-sm" ng-click="loadColorImages(mauSac)">
-                                            <i class="fas fa-image"></i> Thêm ảnh
-                                        </button>
+                                    </td>
+                                </tr>
+                                <tr ng-if="sp.selectedImages && sp.selectedImages.length > 0"
+                                    ng-repeat="sp in sanPhamPreview">
+                                    <td colspan="4">
+                                        <div class="image-container">
+                                            <img ng-repeat="image in sp.selectedImages" ng-src="{{getImageUrl(image)}}"
+                                                class="img-thumbnail" alt="Ảnh sản phẩm"
+                                                style="width: 50px; height: 50px; margin: 2px;">
+                                        </div>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
 
-
-
                     <!-- Modal để chọn ảnh -->
                     <div id="imageModal" class="modal fade" tabindex="-1" role="dialog">
                         <div class="modal-dialog modal-lg" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title">Chọn ảnh cho màu: {{currentMauSac.tenMauSac}}</h5>
+                                    <h5 class="modal-title">Chọn ảnh</h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal"
                                         aria-label="Close"></button>
                                 </div>
@@ -176,10 +178,9 @@
                                         <div class="col-md-3" ng-repeat="image in availableImages">
                                             <div class="card">
                                                 <img ng-src="{{getImageUrl(image)}}" class="card-img-top img-thumbnail"
-                                                    alt="Ảnh sản phẩm">
+                                                    alt="Ảnh">
                                                 <div class="card-body text-center">
-                                                    <input type="checkbox" ng-model="image.selected"
-                                                        ng-checked="isImageSelected(image)"> Chọn
+                                                    <input type="checkbox" ng-model="image.selected"> Chọn
                                                 </div>
                                             </div>
                                         </div>
@@ -187,16 +188,18 @@
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                                    <button type="button" class="btn btn-primary"
-                                        ng-click="addImagesToColor()">Lưu</button>
+                                    <button type="button" class="btn btn-primary" ng-click="addImagesToProduct()">Thêm
+                                        ảnh</button>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <button type="button" class="btn btn-primary" ng-click="themSanPham()" ng-if="isProductCreated">
+                    <button type="button" class="btn btn-primary" ng-click="themSanPham()">
                         <i class="fas fa-plus-circle"></i> Thêm sản phẩm
                     </button>
+
+
                 </div>
             </div>
         </div>

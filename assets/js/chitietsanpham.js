@@ -4,12 +4,8 @@ const urlParams = new URLSearchParams(window.location.search);
 const id = urlParams.get("id");
 
 app.controller("chiTietSanPhamController", function ($scope, $http, $window) {
-  $scope.isProductCreated = false;
-  $scope.availableImages = [];
-  $scope.sanPhamPreviewBackup = [];
   $scope.chiTietSanPham = {};
-  $scope.currentMauSac = {}; // Khởi tạo đối tượng rỗng nếu mauSac không có giá trị
-  $scope.currentMauSac.selectedImages = []; // Khởi tạo mảng nếu chưa có
+  $scope.availableImages = []; // Khởi tạo mảng images
 
   // Tải dữ liệu ban đầu
   $scope.loadData = function () {
@@ -38,6 +34,28 @@ app.controller("chiTietSanPhamController", function ($scope, $http, $window) {
       });
   };
 
+  // Thêm ảnh cho sản phẩm
+  $scope.addImagesToProduct = function () {
+    const selectedImages = $scope.availableImages.filter(
+      (image) => image.selected
+    );
+
+    if ($scope.currentProduct && selectedImages.length > 0) {
+      if (!$scope.currentProduct.selectedImages) {
+        $scope.currentProduct.selectedImages = [];
+      }
+
+      $scope.currentProduct.selectedImages = selectedImages;
+
+      toastr.success(
+        "Ảnh đã được chọn cho sản phẩm. Nhấn 'Thêm sản phẩm' để lưu ảnh."
+      );
+      $("#imageModal").modal("hide"); // Đóng modal
+    } else {
+      toastr.warning("Chưa chọn ảnh nào để thêm.");
+    }
+  };
+
   // Lấy chi tiết sản phẩm theo ID
   $http
     .get(`http://localhost:8080/chitietsanpham/${id}`)
@@ -48,110 +66,140 @@ app.controller("chiTietSanPhamController", function ($scope, $http, $window) {
       console.error("Lỗi khi lấy chi tiết sản phẩm:", error);
     });
 
+  // Tạo sản phẩm mới
   $scope.taoSanPham = function () {
-    $scope.kichCos.forEach(function (kichCo) {
+    $scope.sanPhamPreview = [];
+
+    $scope.kichCos.forEach((kichCo) => {
       if (kichCo.selected) {
-        $scope.mauSacs.forEach(function (mauSac) {
+        $scope.mauSacs.forEach((mauSac) => {
           if (mauSac.selected) {
-            $scope.sanPhamPreviewBackup.push({
+            const sanPhamMoi = {
               sanPham: $scope.chiTietSanPham.sanPham,
               kichCo: kichCo,
               mauSac: mauSac,
-              soLuong: $scope.chiTietSanPham.soLuong || 0, // Gán giá trị mặc định nếu chưa có
-              giaBan: $scope.chiTietSanPham.giaBan || 0, // Gán giá trị mặc định nếu chưa có
+              soLuong: $scope.chiTietSanPham.soLuong,
+              giaBan: $scope.chiTietSanPham.giaBan,
               deGiay: $scope.chiTietSanPham.deGiay,
               chatLieu: $scope.chiTietSanPham.chatLieu,
               danhMuc: $scope.chiTietSanPham.sanPham.danhMuc,
               thuongHieu: $scope.chiTietSanPham.sanPham.thuongHieu,
+              selectedImages: [], // Khởi tạo thuộc tính ảnh
               chonThem: false,
-              selectedImages: [], // Khởi tạo mảng ảnh rỗng
-            });
+            };
+
+            if ($scope.chiTietSanPham.selectedImages) {
+              sanPhamMoi.selectedImages = $scope.chiTietSanPham.selectedImages;
+            }
+
+            $scope.sanPhamPreview.push(sanPhamMoi);
           }
         });
       }
     });
-    $scope.isProductCreated = true;
+
+    // In ra kết quả danh sách sản phẩm đã tạo để kiểm tra
+    console.log($scope.sanPhamPreview);
   };
 
-  // Kiểm tra nếu ảnh đã được chọn
-  $scope.isImageSelected = function (image) {
-    return $scope.currentMauSac.selectedImages.some(function (img) {
-      return img.id === image.id;
+  $scope.isProductCreated = true; // hoặc điều kiện bạn muốn set giá trị này
+
+  $scope.themSanPham = function () {
+    const selectedProducts = $scope.sanPhamPreview.filter(function (sp) {
+      return sp.chonThem === true;
     });
+
+    if (selectedProducts.length > 0) {
+      const promises = selectedProducts.map(function (product) {
+        // Log dữ liệu sản phẩm trước khi gửi
+        console.log("Dữ liệu sản phẩm gửi đi:", product);
+
+        return $http
+          .post("http://localhost:8080/chitietsanpham", product)
+          .then(function (response) {
+            toastr.success("Sản phẩm đã được thêm vào cơ sở dữ liệu.");
+            // Tiến hành thêm ảnh nếu có
+            if (product.selectedImages && product.selectedImages.length > 0) {
+              const chiTietAnhGiayPromises = product.selectedImages.map(
+                function (image) {
+                  const chiTietAnhGiay = {
+                    trangThai: 1,
+                    chiTietSanPham: { id: response.data.id }, // ID sản phẩm đã được tạo
+                    anhGiay: { id: image.id },
+                  };
+
+                  return $http
+                    .post(
+                      "http://localhost:8080/chitietanhgiay",
+                      chiTietAnhGiay
+                    )
+                    .then(function () {
+                      toastr.success("Ảnh đã được thêm cho sản phẩm!");
+                    })
+                    .catch(function (error) {
+                      toastr.error(
+                        "Lỗi khi thêm ảnh cho sản phẩm: " + error.message
+                      );
+                    });
+                }
+              );
+              return Promise.all(chiTietAnhGiayPromises);
+            }
+          })
+          .catch(function (error) {
+            console.error("Lỗi khi thêm sản phẩm:", error);
+            toastr.error("Có lỗi khi thêm sản phẩm.");
+          });
+      });
+
+      Promise.all(promises)
+        .then(function () {
+          $scope.isProductCreated = true;
+        })
+        .catch(function (error) {
+          toastr.error(
+            "Có lỗi xảy ra khi thêm sản phẩm hoặc ảnh: " + error.message
+          );
+        });
+    } else {
+      toastr.warning("Chưa chọn sản phẩm nào để thêm.");
+    }
   };
 
-  $scope.loadColorImages = function (mauSac) {
-    // Tải ảnh cho màu sắc hiện tại
-    $http;
+  // Mở modal chọn ảnh cho sản phẩm
+  $scope.openImageModal = function (product) {
+    $scope.currentProduct = product; // Lưu sản phẩm hiện tại
+
+    if (Array.isArray($scope.availableImages)) {
+      $scope.availableImages.forEach((image) => {
+        image.selected = false; // Đặt lại trạng thái chọn
+      });
+    }
+
     $http
-      .get(`http://localhost:8080/anhgiay?mauSacId=${mauSac.id}`)
+      .get("http://localhost:8080/anhgiay")
       .then(function (response) {
-        $scope.availableImages = response.data;
-        $scope.currentMauSac = mauSac;
-        $("#imageModal").modal("show");
+        $scope.availableImages = response.data; // Cập nhật danh sách ảnh có sẵn
+        $("#imageModal").modal("show"); // Mở modal
       })
       .catch(function (error) {
-        if (error.status === 404) {
-          toastr.error("Không tìm thấy ảnh cho màu sắc này!", "Thông báo");
-        } else {
-          toastr.error(
-            "Lỗi khi tải ảnh từ máy chủ, vui lòng thử lại sau.",
-            "Thông báo"
-          );
-        }
+        toastr.error("Lỗi khi tải danh sách ảnh.", "Thông báo");
       });
   };
 
-  // Thêm ảnh vào màu sắc
-  $scope.addImagesToColor = function () {
-    const selectedImages = $scope.availableImages.filter(function (image) {
-      return image.selected;
-    });
-
-    if (selectedImages.length === 0) {
-      toastr.error("Không có ảnh nào được chọn!", "Thông báo");
-      return;
-    }
-
-    // Khởi tạo danh sách nếu chưa có
-    $scope.currentMauSac.selectedImages =
-      $scope.currentMauSac.selectedImages || [];
-
-    // Thêm chỉ những ảnh mới, chưa có vào danh sách
-    selectedImages.forEach(function (image) {
-      if (
-        !$scope.currentMauSac.selectedImages.some(function (img) {
-          return img.id === image.id;
-        })
-      ) {
-        $scope.currentMauSac.selectedImages.push(image);
-      }
-    });
-
-    // Cập nhật lại dữ liệu cho sản phẩm trong sanPhamPreviewBackup
-    $scope.sanPhamPreviewBackup.forEach(function (sp) {
-      if (sp.mauSac.id === $scope.currentMauSac.id) {
-        sp.selectedImages = angular.copy($scope.currentMauSac.selectedImages);
-      }
-    });
-
-    $("#imageModal").modal("hide");
-    toastr.success("Thêm ảnh thành công cho màu sắc!", "Thông báo");
-  };
-
-  // Lấy URL của ảnh
+  // Lấy đường dẫn ảnh
   $scope.getImageUrl = function (image) {
     return (
       "http://localhost:8080/anhgiay/images/" +
-      encodeURIComponent(image.tenURL.replace(/^\/images\//, ""))
+      image.tenURL.replace(/^\/images\//, "")
     );
   };
 
   // Xóa sản phẩm
   $scope.xoaSanPham = function (sp) {
-    const index = $scope.sanPhamPreviewBackup.indexOf(sp);
+    const index = $scope.sanPhamPreview.indexOf(sp);
     if (index > -1) {
-      $scope.sanPhamPreviewBackup.splice(index, 1);
+      $scope.sanPhamPreview.splice(index, 1);
       toastr.success("Sản phẩm đã được xóa thành công!");
     } else {
       toastr.error("Không tìm thấy sản phẩm cần xóa.");
